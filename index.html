@@ -2,9 +2,58 @@
 <html>
 	<head>
 		<meta charset="utf-8" />
+       <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <meta name="viewport" data-type="standard" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <meta name="viewport" data-type="IOS" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, target-densitydpi=device-dpi" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <link rel="stylesheet" type="text/css" href="css/framework.css" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <script type="text/javascript" src="external/jquery/jquery-2.2.3.min.js"></script>
+        <script type="text/javascript" src="js/main.js"></script>
 		<title>LetzBuy!</title>
 	</head>
 	<body>
-		<h1>Hello World</h1>
+		<div id="templates">
+			<div id="history" data-template="history_page">
+				History goes here
+			</div>
+			<div id="home" data-template="home_page">
+				Homepage goes here
+			</div>
+			<div id="chat" data-template="chat_page">
+				Chatting
+			</div>
+		</div>
+		<div id="app">
+			<div id="heading">
+				<div id="overview">
+					<div id="townname">
+						<span data-refresh="geoname">KopenHagen</span>
+					</div>
+					<div id="user_icon">
+						<img id="avatar" src="bla.png"/>
+					</div>
+				</div>
+				<div id="navigationbar">
+					<div class="navigation_item" data-templatelink="history_page">
+						<span class="icon">History</span>
+					</div>
+					<div class="navigation_item" data-templatelink="home_page">
+						<span class="icon">Home</span>
+					</div>
+					<div class="navigation_item" data-templatelink="chat_page">
+						<span class="icon">Chat</span>
+					</div>
+				</div>
+			</div>
+			<div id="content">
+				#content goes here
+			</div>
+		</div>
+		<script type="text/javascript">
+			app.init();
+		</script>
 	</body>
 </html> 
