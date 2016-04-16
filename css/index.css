@@ -1,3 +1,6 @@
+*:focus, *:active {
+    outline: none;
+}
 body, html{
 	margin: 0px !important;
 	padding: 0px !important;
@@ -28,16 +31,29 @@ body, html{
 	justify-content: space-between;
 	border-bottom: 1px solid rgb(188, 188, 188);
 }
+#back_btn{
+	display: hidden;
+	margin: 3vh;
+	height: 6vh;
+	width: 6vh;
+}
 #townname{
 	flex: 1;
 	text-align: center;
 	height: 12vh;
 	line-height: 12vh;
+	font-size: 6vh;
 }
-#user_icon, #notification{
+#user_icon, #back{
 	width: 20vw;
 	height: 12vh;
 	line-height: 12vh;
+}
+#avatar{
+	margin: 3vh;
+	float: right;
+	height: 6vh;
+	width: 6vh;
 }
 #navigationbar{
 	width: 100vw;
@@ -56,9 +72,21 @@ body, html{
 #navigationbar:not(:first-child) > .navigation_item{
 	border-left: 1px solid rgb(188, 188, 188);
 }
+.navigation_item.active{
+	background-color: rgb(162,0,255);
+	color: white;
+}
 
 
 /* CONTENT STARTS HERE */
 #content{
 	margin-top: 20vh;
+}
+#create_new_list{
+	display: flex;
+	justify-content: center;
+}
+#create_new_list_btn{
+	margin: 2vh 0;
+	width: 66vw;
 }

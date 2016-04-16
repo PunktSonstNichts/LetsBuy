@@ -15,22 +15,11 @@
 		<title>LetzBuy!</title>
 	</head>
 	<body>
-		<div id="templates">
-			<div id="history" data-template="history_page">
-				History goes here
-			</div>
-			<div id="home" data-template="home_page">
-				Homepage goes here
-			</div>
-			<div id="chat" data-template="chat_page">
-				Chatting
-			</div>
-		</div>
 		<div id="app">
 			<div id="heading">
 				<div id="overview">
-					<div id="notification">
-
+					<div id="back">
+						<span id="back_btn"><-</span>
 					</div>
 					<div id="townname">
 						<span data-refresh="geoname">KopenHagen</span>
@@ -40,19 +29,40 @@
 					</div>
 				</div>
 				<div id="navigationbar">
-					<div class="navigation_item" data-templatelink="history_page">
+					<div class="navigation_item" data-pagelink="history_page">
 						<span class="icon">History</span>
 					</div>
-					<div class="navigation_item" data-templatelink="home_page">
+					<div class="navigation_item active" data-pagelink="home_page">
 						<span class="icon">Home</span>
 					</div>
-					<div class="navigation_item" data-templatelink="chat_page">
+					<div class="navigation_item" data-pagelink="chat_page">
 						<span class="icon">Chat</span>
 					</div>
 				</div>
 			</div>
 			<div id="content">
-				#content goes here
+				error message
+			</div>
+		</div>
+		<!-- templates down here because of multiple ids in one .html -> confuses Javascript -->
+		<div id="templates">
+			<div id="history" data-template="history_page">
+				History goes here
+			</div>
+
+			<div id="home" data-template="home_page">
+				<div id="create_new_list">
+					<button class="btn btn_flat" id="create_new_list_btn" data-templatelink="new_list">Create new List</button>
+				</div>
+				Homepage goes here
+			</div>
+
+			<div id="chat" data-template="chat_page">
+				Chatting
+			</div>
+
+			<div id="new_list" data-template="new_list" style="padding: 5vmax;">
+				<input type="text" placeholder="Heading" name="heading"/>
 			</div>
 		</div>
 		<script type="text/javascript">
