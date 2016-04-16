@@ -76,7 +76,24 @@ body, html{
 	background-color: rgb(162,0,255);
 	color: white;
 }
+/* LOGIN & REGISTER  */
+#app.hiddenHeading > #heading{
+	-webkit-transform: translate3d(0, -20.1vh, 0);
+	transform: translate3d(0, -20.1vh, 0);
+	visibility: visible;
+	-webkit-transition: -webkit-transform 0.5s;
+	transition: transform 0.5s;
+}
 
+#login_form{
+margin: 5vh 5vw;
+}
+.login_input {
+    display: inline-box;
+    width: 100%;
+    margin:1vh 0;
+    box-sizing: border-box;
+}
 
 /* CONTENT STARTS HERE */
 #content{
