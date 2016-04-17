@@ -211,7 +211,7 @@ var app = {
 			(function rungeo() {
 			    navigator.geolocation.getCurrentPosition(updatePosition);
 
-			    setTimeout(rungeo, 9000);
+			    setTimeout(rungeo, 900000);
 			})();
 	    } else {
 	    	// ERROR CLASS
