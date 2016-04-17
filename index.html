@@ -52,7 +52,7 @@
 
 			<div id="home" data-template="home_page">
 				<div id="create_new_list">
-					<button class="btn btn_flat" id="create_new_list_btn" data-templatelink="new_list">Create new List</button>
+					<button class="btn success" id="create_new_list_btn" data-templatelink="new_list">Create new List</button>
 				</div>
 				Homepage goes here
 			</div>
@@ -63,17 +63,36 @@
 
 			<div id="new_list" data-template="new_list" style="padding: 5vmax;">
 				<input type="text" placeholder="Heading" name="heading"/>
-				TODO
-			</div>
+				<input type="text" placeholder="Deadline" name="DueDate"/>
 
-			<div id="login" data-template="login">
-				<div id="login_heading">
+				<div id="itemholder">
 
 				</div>
-				<div id="login_form">
-					<input type="text" class="login_input" placeholder="username or email" name="XXX"/>
-					<input type="password" class="login_input" placeholder="password" name="password"/>
-					<input type="submit" class="login_input" value="log in!"/>
+			</div>
+			<div class="item" data-template="list_item">
+				<input type="text" placeholder="name"/>
+				<input type="number" placeholder="quantity" min="0.0" step="0.5"/>
+			</div>
+			<div id="auth" data-template="auth">
+				<div id="login_heading">
+					Start using LetzBuy!
+				</div>
+				<div id="register_form">
+					<form class="authform" data-serive="user">
+						<input type="text" class="login_input" placeholder="username" name="name"/>
+						<input type="text" class="login_input" placeholder="email" name="email"/>
+						<input type="password" class="login_input" placeholder="password" name="password"/>
+						<button type="submit" class="login_input">register!</button>
+					</form>
+					<button class="change_auth_state login_input">login</button>
+				</div>
+				<div id="login_form" class="hidden">
+					<form class="authform" data-service="user">
+						<input type="text" class="login_input" placeholder="username" name="name"/>
+						<input type="password" class="login_input" placeholder="password" name="password"/>
+						<button type="submit" class="login_input">log in!</button>
+					</form>
+					<button class="change_auth_state login_input">register</button>
 				</div>
 			</div>
 		</div>

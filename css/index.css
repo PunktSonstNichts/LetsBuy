@@ -1,3 +1,7 @@
+*{
+	-webkit-transition: all 0.5s ease-in-out;
+	transition: all 0.5s ease-in-out;
+}
 *:focus, *:active {
     outline: none;
 }
@@ -78,15 +82,33 @@ body, html{
 }
 /* LOGIN & REGISTER  */
 #app.hiddenHeading > #heading{
-	-webkit-transform: translate3d(0, -20.1vh, 0);
-	transform: translate3d(0, -20.1vh, 0);
+	-webkit-transform: translate3d(0, -40.1vh, 0);
+	transform: translate3d(0, -40.1vh, 0);
 	visibility: visible;
-	-webkit-transition: -webkit-transform 0.5s;
-	transition: transform 0.5s;
 }
-
-#login_form{
+#app.hiddenHeading > #content{
+	-webkit-transform: translate3d(0, -20vh, 0);
+	transform: translate3d(0, -20vh, 0);
+	visibility: visible;
+}
+#auth{
+	position: absolute;
+	height: 100vh;
+	width: 100vw;
+	overflow: hidden;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+}
+#login_form, #register_form{
 margin: 5vh 5vw;
+}
+#login_form.hidden, #register_form.hidden{
+	top: 100vh;
+	margin-top: 100vh;
+	height: 0px !important;
+	position: absolute;
 }
 .login_input {
     display: inline-box;

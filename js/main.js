@@ -4,12 +4,41 @@ var app = {
 	long: 0.0,
 	init: function(){
 		// starting site
-		// $("#content").html(app.template("home_page"));
-		$("#content").html(app.template("login"));
+		// stuff not worth creating a node for
+
+		// fill new shoppinglist form
+		$("#itemholder").append(app.template("list_item"));
+
 		// Geo stuff
 		app.geo();
-		// Check for Login
-		app.ajax("user", {auth: "PunktSonstNichts", password: "12345"});
+
+		//Login change view
+		$(document).on("click touchstart",".change_auth_state",function(e) {
+			e.stopPropagation();
+			e.preventDefault();
+			$("#login_form, #register_form").toggleClass("hidden");
+		});
+		// Login form submit
+		$(".authform").submit(function(e){
+			e.preventDefault();
+			app.ajax("user", {name: $(this).children("*[name=name]").val(), email: $(this).children("*[name=email]").val(), password: $(this).children("*[name=password]").val()}, (function(data){
+
+				console.log(data);
+				if(data.api_token){
+					localStorage.setItem("api_token", data.api_token);
+					$("#content").html(app.template("home_page"));
+					app.user();
+				}else{
+					alert("append error WIP");
+				}
+			}));
+		});
+
+		if(localStorage.getItem("api_token") != null){
+			$("#content").html(app.template("home_page"));
+		}else{
+			$("#content").html(app.template("auth"));
+		}
 
 		// For the main 3 areas
 		$(document).on("click touchstart",".navigation_item[data-pagelink][data-pagelink!='']",function() {
@@ -36,20 +65,30 @@ var app = {
 			$("#content").html(app.template($(this).attr("data-templatelink")));
 		});
 	},
+	user: function(){
+			app.ajax("shopping_list_overview", {}, (function(data){
+
+				console.log(data);
+				if(data.length != 0){
+					
+				}else{
+					alert("append error WIP");
+				}
+			}));
+		
+	},
 	template: function(name){
-		switch(name){
-			case "login":
-			case "regristation":
-				$("#app").addClass("hiddenHeading");
-			break;
-			default:
-				$("#app").removeClass("hiddenHeading");
+		console.log(name);
+		if(name == "auth"){
+			$("#app").addClass("hiddenHeading");
+		}else{
+			$("#app").removeClass("hiddenHeading");
 		}
 		html = $("*[data-template='" + name + "']").wrap('<p/>').parent().html();
 		$("*[data-template='" + name + "']").unwrap('<p/>');
 		return html;
 	},
-	ajax: function(service, data){
+	ajax: function(service, data, response){
 		// CHECK FOR CONNECTION HERE #TODO
 
 		switch(service){
@@ -57,13 +96,20 @@ var app = {
 				url = app.BASE_URL + "/user";
 				type = 'POST';
 				break;
-			case "shopping_list":
-				url = app.BASE_URL + "user.php";
+			case "shopping_list_overview":
+				url = app.BASE_URL + "/list";
+				type = 'GET';
+				break;
+			case "create_shopping_list":
+				url = app.BASE_URL + "/list";
 				type = 'POST';
 				break;
 			default:
 				// ERROR CLASS
 		}
+		//needs to be there on every call
+		data.api_token = localStorage.getItem("api_token");
+
 		$.ajaxSetup({
 			beforeSend: function(xhr) {
 		        xhr.withCredentials = true;
@@ -75,6 +121,7 @@ var app = {
 			data: data,
 			type: type,
 			error: function(data) {
+				response(data);
 	            if( data.status === 422 ) {
 		            //process validation errors here.
 		            var errors = data.responseJSON; 
@@ -85,7 +132,7 @@ var app = {
 	            }
 			},
 			success: function(data) {
-				// PARSE DATA AND THEN RETURN
+				response(data);
 			}
 		});
 	},
