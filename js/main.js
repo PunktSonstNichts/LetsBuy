@@ -7,6 +7,11 @@ var app = {
 		// stuff not worth creating a node for
 		// fill new shoppinglist form
 		$("#itemholder").append(app.template("list_item"));
+		//TEMP
+		$(document).on("click touchstart", "#logout", function(){
+			localStorage.removeItem("api_token");
+			location.reload();
+		});
 
 		$(document).on('unblur keyup', '.item > *', function(e){
 			//should create a new one if everything is full
@@ -64,7 +69,7 @@ var app = {
 					$("#content").html(app.template("home_page"));
 					app.user(data);
 				}else{
-					alert("append error WIP");
+					alert(data.error);
 				}
 			}));
 		});

@@ -14,6 +14,11 @@ button.success, .btn.success, *[type='submit']{
 	border: 1px solid rgb(113,154,31);
 }
 
+button.danger, .btn.danger{
+	background-color: rgb(212,18,67);
+	border: 1px solid rgb(169,14,53);
+}
+
 button:hover, .btn:hover{
 	background-color: rgb(219,108,47) ;
 	border: 1px solid rgb(195,96,42) ;
@@ -22,6 +27,11 @@ button:hover, .btn:hover{
 button.success:hover, .btn.success:hover, *[type='submit']:hover{
 	background-color: rgb(127,173,35);
 	border: 1px solid rgb(113,154,31);
+	box-shadow: inset 0px 2px 4px rgba(33, 33, 33, 0.6);
+}
+button.danger:hover, .btn.danger:hover{
+	background-color: rgb(190,16,60);
+	border: 1px solid rgb(169,14,53);
 	box-shadow: inset 0px 2px 4px rgba(33, 33, 33, 0.6);
 }
 
