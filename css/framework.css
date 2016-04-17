@@ -1,7 +1,7 @@
 button, .btn, *[type='submit']{
 	border-radius: 1vmin;
 	padding: 4vmin 4vmax;
-	font-size: 2vmax;
+	font-size: 1.7vmax;
 	line-height: 2vmax;
 	color: white;
 	font-size: bold;
@@ -28,7 +28,7 @@ button.success:hover, .btn.success:hover, *[type='submit']:hover{
 input[type='text'], input[type='password']{
 	border-radius: 1vmin;
 	padding: 4vmin 4vmax;
-	font-size: 2vmax;
+	font-size: 1.7vmax;
 	line-height: 2vmax;
 	border: 1px solid rgb(188, 188, 188);
 	background-color: rgba(255, 255, 255, 0.8);

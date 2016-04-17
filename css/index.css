@@ -1,6 +1,6 @@
 *{
-	-webkit-transition: all 0.5s ease-in-out;
-	transition: all 0.5s ease-in-out;
+	-webkit-transition: all 0.2s ease-in-out;
+	transition: all 0.2s ease-in-out;
 }
 *:focus, *:active {
     outline: none;
@@ -18,6 +18,7 @@ body, html{
 	width: 0px;
 	position: absolute;
 	overflow: hidden;
+	/* opacity: 0; */
 } 
 #heading{
 	width: 100vw;
@@ -58,6 +59,7 @@ body, html{
 	float: right;
 	height: 6vh;
 	width: 6vh;
+	border-radius: 3vh;
 }
 #navigationbar{
 	width: 100vw;
@@ -77,7 +79,7 @@ body, html{
 	border-left: 1px solid rgb(188, 188, 188);
 }
 .navigation_item.active{
-	background-color: rgb(162,0,255);
+	background-color: rgb(0,174,219);
 	color: white;
 }
 /* LOGIN & REGISTER  */
@@ -128,4 +130,87 @@ margin: 5vh 5vw;
 #create_new_list_btn{
 	margin: 2vh 0;
 	width: 66vw;
+}
+.list{
+	padding: 1vmin;
+	border: 1px solid rgba(188, 188, 188, 0.5);
+	border-radius: 0.1vmin;
+	margin: 2vmin;
+	background-color: rgb(254, 254, 255);
+	box-shadow: 0px 2px 8px rgba(33, 33, 33, 0.2);
+}
+.list_first_row{
+	font-weight: bold;
+}
+.list_last_row{
+	font-size: 0.9em;
+	color: rgb(44, 44, 44);
+}
+
+
+/* FORM FOR CREATING NEW LIST */
+#itemheading, #itemholder, #itemsubmit{
+	padding: 2vh 4vw;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+#itemheading{
+	border-bottom: 1px solid rgb(188, 188, 188);
+}
+#itemholder{
+	flex-direction: column;
+}
+#itemheading > input:first-child{
+	width: 50vw;
+}
+#itemheading > input:last-child{
+	width: 10vw;
+}
+#itemholder > * > input{
+	width: 30vw;
+}
+#itemsubmit{
+	width: 100%;
+	box-sizing: border-box;
+}
+#itemsubmit > button{
+	width: 100%;
+	box-sizing: border-box;
+}
+.item{
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+	margin: 4vh 0;
+}
+
+/* MATCH */
+#user_info{
+	height: 25vh;
+	border-bottom: 1px solid rgb(188, 188, 188);
+	display: flex;
+	padding: 5vw;
+}
+#user_general{
+	width: 34.9vw;
+	border-right: 0.1vw solid rgb(188, 188, 188);
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+	flex-direction: column;
+}
+#match_avatar{
+	width: 20vw;
+	height: 20vw;
+	border-radius: 20vw;
+}
+#user_description{
+	padding: 5vmin;
+	color: rgb(162,0,255);
+}
+#user_description > p:before, #user_description > p:after{
+	content: '"';
+	color: rgb(33,33,33);
 }

@@ -5,9 +5,44 @@ var app = {
 	init: function(){
 		// starting site
 		// stuff not worth creating a node for
-
 		// fill new shoppinglist form
 		$("#itemholder").append(app.template("list_item"));
+
+		$(document).on('unblur keyup', '.item > *', function(e){
+			//should create a new one if everything is full
+			target = $(this);
+			console.log("Background check");
+			everything_full = true;
+			$("#itemholder").children(".item").each(function(){
+				console.log($(this).children(".nlname_input").val());
+				console.log($(this).children(".nlquantity_input").val());
+				if($(this).children(".nlname_input").val() == "" || $(this).children(".nlquantity_input").val() == ""){
+					everything_full = false;
+				}
+			});
+			console.log(everything_full);
+			if(everything_full){
+				$("#itemholder").append(app.template("list_item"));
+			}
+			target.focus();
+		});
+		//submit
+		$(document).on('submit', "#new_list_form", function(e){
+			e.preventDefault();
+			console.log($(this).serializeObject());
+			data = $(this).serializeObject();
+			data.latitude = app.lat;
+			data.longitude = app.long;
+			app.ajax("create_shopping_list", data, (function(data){
+				if(data.success){
+					$("#content").html(app.template("home_page"));
+					app.user(data);
+				}else{
+
+				}
+			}));
+		});
+
 
 		// Geo stuff
 		app.geo();
@@ -19,7 +54,7 @@ var app = {
 			$("#login_form, #register_form").toggleClass("hidden");
 		});
 		// Login form submit
-		$(".authform").submit(function(e){
+		$(document).on('submit', 'form.authform', function(e) {
 			e.preventDefault();
 			app.ajax("user", {name: $(this).children("*[name=name]").val(), email: $(this).children("*[name=email]").val(), password: $(this).children("*[name=password]").val()}, (function(data){
 
@@ -27,7 +62,7 @@ var app = {
 				if(data.api_token){
 					localStorage.setItem("api_token", data.api_token);
 					$("#content").html(app.template("home_page"));
-					app.user();
+					app.user(data);
 				}else{
 					alert("append error WIP");
 				}
@@ -35,7 +70,17 @@ var app = {
 		});
 
 		if(localStorage.getItem("api_token") != null){
-			$("#content").html(app.template("home_page"));
+			app.ajax("user", {api_token: localStorage.getItem("api_token")}, function(data){
+				console.log(data);
+				if(data.api_token){
+					console.log("Auto Login");
+					localStorage.setItem("api_token", data.api_token);
+					$("#content").html(app.template("home_page"));
+					app.user(data);
+				}else{
+					$("#content").html(app.template("auth"));
+				}
+			});
 		}else{
 			$("#content").html(app.template("auth"));
 		}
@@ -64,15 +109,30 @@ var app = {
 			// follow link
 			$("#content").html(app.template($(this).attr("data-templatelink")));
 		});
+
 	},
-	user: function(){
+	update: function(){
+
+	},
+	user: function(data){
+		if(data){
+			if(data.picture){
+				$("*[data-refresh='avatar']").attr("src", data.picture);
+			}
+			if(data.name){
+				$("*[data-refresh='name']").html(data.name);
+			}
+		}
 			app.ajax("shopping_list_overview", {}, (function(data){
 
 				console.log(data);
-				if(data.length != 0){
-					
+				if(data.length > 0){
+					$.each(data, function( index, value ) {
+						console.log(value);
+						$("#currentlists").append(app.templatelist.list(value));
+					});
 				}else{
-					alert("append error WIP");
+					alert("no lists created yet");
 				}
 			}));
 		
@@ -87,6 +147,11 @@ var app = {
 		html = $("*[data-template='" + name + "']").wrap('<p/>').parent().html();
 		$("*[data-template='" + name + "']").unwrap('<p/>');
 		return html;
+	},
+	templatelist: {
+		list : function(value){
+			return "<div class='list'><div class='list_first_row'>" + value.title + "</div><div class='list_last_row'>" + value.due_date + "</div></div>";
+		}
 	},
 	ajax: function(service, data, response){
 		// CHECK FOR CONNECTION HERE #TODO
@@ -153,4 +218,23 @@ var app = {
 	    }
 	}
 
+};
+
+
+//HELPER
+$.fn.serializeObject = function()
+{
+    var o = {};
+    var a = this.serializeArray();
+    $.each(a, function() {
+        if (o[this.name] !== undefined) {
+            if (!o[this.name].push) {
+                o[this.name] = [o[this.name]];
+            }
+            o[this.name].push(this.value || '');
+        } else {
+            o[this.name] = this.value || '';
+        }
+    });
+    return o;
 };

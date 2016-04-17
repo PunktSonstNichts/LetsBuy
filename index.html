@@ -22,10 +22,10 @@
 						<span id="back_btn"><-</span>
 					</div>
 					<div id="townname">
-						<span data-refresh="geoname">KopenHagen</span>
+						<span data-refresh="geoname">LetzBuy!</span>
 					</div>
 					<div id="user_icon">
-						<img id="avatar" src="bla.png"/>
+						<img id="avatar" src="bla.png" data-refresh="avatar"/>
 					</div>
 				</div>
 				<div id="navigationbar">
@@ -35,7 +35,8 @@
 					<div class="navigation_item active" data-pagelink="home_page">
 						<span class="icon">Home</span>
 					</div>
-					<div class="navigation_item" data-pagelink="chat_page">
+					<!-- <div class="navigation_item" data-pagelink="chat_page"> -->
+					<div class="navigation_item" data-pagelink="match">
 						<span class="icon">Chat</span>
 					</div>
 				</div>
@@ -54,24 +55,45 @@
 				<div id="create_new_list">
 					<button class="btn success" id="create_new_list_btn" data-templatelink="new_list">Create new List</button>
 				</div>
-				Homepage goes here
+				<div id="currentlists">
+
+				</div>
 			</div>
 
 			<div id="chat" data-template="chat_page">
 				Chatting
 			</div>
 
-			<div id="new_list" data-template="new_list" style="padding: 5vmax;">
-				<input type="text" placeholder="Heading" name="heading"/>
-				<input type="text" placeholder="Deadline" name="DueDate"/>
+			<div id="new_list" data-template="new_list">
+				<form id="new_list_form">
+					<div id="itemheading">
+						<input type="text" placeholder="Heading" name="title"/>
+						<input type="text" placeholder="Deadline" name="due_date"/>
+					</div>
+					<div id="itemholder">
 
-				<div id="itemholder">
-
-				</div>
+					</div>
+					<div id="itemsubmit">
+						<button type="submit">Save Shopping List</button>
+					</div>
+				</form>
 			</div>
 			<div class="item" data-template="list_item">
-				<input type="text" placeholder="name"/>
-				<input type="number" placeholder="quantity" min="0.0" step="0.5"/>
+				<input type="text" class="nlname_input" placeholder="name" name="names"/>
+				<input type="text" class="nlquantity_input" placeholder="quantity" name="quantities" pattern="[-+]?([0-9]*\.[0-9]+|[0-9]+)" min="0.0" step="0.5"/>
+			</div>
+			<div id="match" data-template="match">
+				<div id="user_info">
+					<div id="user_general">
+						<img src="" id="match_avatar" data-refresh="avatar"/>
+						<span id="match_name" data-refresh="name"></span>
+					</div>
+					<div id="user_description">
+						<p>
+							I love broccoli pizza!
+						</p>
+					</div>
+				</div>
 			</div>
 			<div id="auth" data-template="auth">
 				<div id="login_heading">
