@@ -131,6 +131,11 @@ var app = {
 
 				console.log(data);
 				if(data.length > 0){
+					$(document).on('click', '.list', function(){
+						app.ajax("shopping_list", {id : $(this).attr("data-elemid")}, (function(data){
+							console.log(data);
+						}));
+					});
 					$.each(data, function( index, value ) {
 						console.log(value);
 						$(".currentlists").append(app.templatelist.list(value));
@@ -156,7 +161,23 @@ var app = {
 	},
 	templatelist: {
 		list : function(value){
-			return "<div class='list'><div class='list_first_row'>" + value.title + "</div><div class='list_last_row'>" + value.due_date + "</div></div>";
+			return '<div class="list" data-elemid="' + value.id + '">'
+					+ '<div class="list_first_row">' + value.title + '</div>'
+					+ '<div class="list_last_row">' + value.due_date + '</div>'
+				+ '</div>';
+		},
+		match: function(value){
+			return '<div id="match" data-template="match">'
+					+ '<div id="user_info">'
+						+ '<div id="user_general">'
+							+ '<img src="" id="match_avatar" data-refresh="avatar"/>'
+							+ '<span id="match_name" data-refresh="name"></span>'
+						+ '</div>'
+						+ '<div id="user_description">'
+							+ '<p>I love broccoli pizza!</p>'
+						+ '</div>'
+					+ '</div>'
+				+ '</div>';
 		}
 	},
 	ajax: function(service, data, response){
@@ -174,6 +195,10 @@ var app = {
 			case "create_shopping_list":
 				url = app.BASE_URL + "/list";
 				type = 'POST';
+				break;
+			case "shopping_list":
+				url = app.BASE_URL + "/list/" + data.id;
+				type = 'GET';
 				break;
 			default:
 				// ERROR CLASS
