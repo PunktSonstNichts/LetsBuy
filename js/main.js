@@ -47,7 +47,7 @@ var app = {
 				}
 			}));
 		});
-
+		app.update();
 
 		// Geo stuff
 		app.geo();
@@ -73,22 +73,6 @@ var app = {
 				}
 			}));
 		});
-
-		if(localStorage.getItem("api_token") != null){
-			app.ajax("user", {api_token: localStorage.getItem("api_token")}, function(data){
-				console.log(data);
-				if(data.api_token){
-					console.log("Auto Login");
-					localStorage.setItem("api_token", data.api_token);
-					$("#content").html(app.template("home_page"));
-					app.user(data);
-				}else{
-					$("#content").html(app.template("auth"));
-				}
-			});
-		}else{
-			$("#content").html(app.template("auth"));
-		}
 
 		// For the main 3 areas
 		$(document).on("click touchstart",".navigation_item[data-pagelink][data-pagelink!='']",function() {
@@ -117,7 +101,22 @@ var app = {
 
 	},
 	update: function(){
-
+		if(localStorage.getItem("api_token") != null){
+			console.log("request data from api_token");
+			app.ajax("user", {api_token: localStorage.getItem("api_token")}, function(data){
+				console.log(data);
+				if(data.api_token){
+					console.log("Auto Login");
+					localStorage.setItem("api_token", data.api_token);
+					app.user(data);
+					$("#content").html(app.template("home_page"));
+				}else{
+					$("#content").html(app.template("auth"));
+				}
+			});
+		}else{
+			$("#content").html(app.template("auth"));
+		}
 	},
 	user: function(data){
 		if(data){
@@ -134,7 +133,7 @@ var app = {
 				if(data.length > 0){
 					$.each(data, function( index, value ) {
 						console.log(value);
-						$("#currentlists").append(app.templatelist.list(value));
+						$(".currentlists").append(app.templatelist.list(value));
 					});
 				}else{
 					alert("no lists created yet");
@@ -143,12 +142,14 @@ var app = {
 		
 	},
 	template: function(name){
-		console.log(name);
+
+		console.log("Building template for '" + name + "'");
 		if(name == "auth"){
 			$("#app").addClass("hiddenHeading");
 		}else{
 			$("#app").removeClass("hiddenHeading");
 		}
+
 		html = $("*[data-template='" + name + "']").wrap('<p/>').parent().html();
 		$("*[data-template='" + name + "']").unwrap('<p/>');
 		return html;
@@ -205,6 +206,8 @@ var app = {
 				response(data);
 			}
 		});
+		
+		//app.update();
 	},
 	geo: function(){
 		if (navigator.geolocation) {
