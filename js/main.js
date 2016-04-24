@@ -182,55 +182,64 @@ var app = {
 	},
 	ajax: function(service, data, response){
 		// CHECK FOR CONNECTION HERE #TODO
-
-		switch(service){
-			case "user":
-				url = app.BASE_URL + "/user";
-				type = 'POST';
-				break;
-			case "shopping_list_overview":
-				url = app.BASE_URL + "/list";
-				type = 'GET';
-				break;
-			case "create_shopping_list":
-				url = app.BASE_URL + "/list";
-				type = 'POST';
-				break;
-			case "shopping_list":
-				url = app.BASE_URL + "/list/" + data.id;
-				type = 'GET';
-				break;
-			default:
-				// ERROR CLASS
-		}
-		//needs to be there on every call
-		data.api_token = localStorage.getItem("api_token");
-
-		$.ajaxSetup({
-			beforeSend: function(xhr) {
-		        xhr.withCredentials = true;
-		        xhr.setRequestHeader('Accept', 'application/json');
-		    }
-		});
-		$.ajax({
-			url: url,
-			data: data,
-			type: type,
-			error: function(data) {
-				response(data);
-	            if( data.status === 422 ) {
-		            //process validation errors here.
-		            var errors = data.responseJSON; 
-
-		            console.log(errors);
-	            } else {
-
-	            }
-			},
-			success: function(data) {
-				response(data);
+		if(!navigator.onLine){
+			cache = localStorage.getItem(service);
+			if(cache && cache.received + 1000 > Date.now()){
+				response(cache);
 			}
-		});
+		}else{
+			switch(service){
+				case "user":
+					url = app.BASE_URL + "/user";
+					type = 'POST';
+					break;
+				case "shopping_list_overview":
+					url = app.BASE_URL + "/list";
+					type = 'GET';
+					break;
+				case "create_shopping_list":
+					url = app.BASE_URL + "/list";
+					type = 'POST';
+					break;
+				case "shopping_list":
+					url = app.BASE_URL + "/list/" + data.id;
+					type = 'GET';
+					break;
+				default:
+					// ERROR CLASS
+			}
+			//needs to be there on every call
+			data.api_token = localStorage.getItem("api_token");
+
+			$.ajaxSetup({
+				beforeSend: function(xhr) {
+			        xhr.withCredentials = true;
+			        xhr.setRequestHeader('Accept', 'application/json');
+			    }
+			});
+			$.ajax({
+				url: url,
+				data: data,
+				type: type,
+				error: function(data) {
+		            if( data.status === 422 ) {
+			            //process validation errors here.
+			            var errors = data.responseJSON; 
+
+			            console.log(errors);
+		            } else {
+
+		            }
+					response(data);
+				},
+				success: function(data) {
+					data.received = Date.now();
+
+					response(data);
+					localStorage.setItem(service, data);
+				}
+			});
+		}
 		
 		//app.update();
 	},
@@ -255,19 +264,8 @@ var app = {
 
 
 //HELPER
-$.fn.serializeObject = function()
-{
-    var o = {};
-    var a = this.serializeArray();
-    $.each(a, function() {
-        if (o[this.name] !== undefined) {
-            if (!o[this.name].push) {
-                o[this.name] = [o[this.name]];
-            }
-            o[this.name].push(this.value || '');
-        } else {
-            o[this.name] = this.value || '';
-        }
-    });
-    return o;
-};
+
+// for current timestamp
+if (!Date.now) {
+    Date.now = function() { return new Date().getTime(); }
+}
