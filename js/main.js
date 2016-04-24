@@ -131,6 +131,11 @@ var app = {
 
 				console.log(data);
 				if(data.length > 0){
+					$(document).on('click', '.list', function(){
+						app.ajax("shopping_list", {id : $(this).attr("data-elemid")}, (function(data){
+							console.log(data);
+						}));
+					});
 					$.each(data, function( index, value ) {
 						console.log(value);
 						$(".currentlists").append(app.templatelist.list(value));
@@ -156,56 +161,85 @@ var app = {
 	},
 	templatelist: {
 		list : function(value){
-			return "<div class='list' data-elemid='" + value.id + "'><div class='list_first_row'>" + value.title + "</div><div class='list_last_row'>" + value.due_date + "</div></div>";
+			return '<div class="list" data-elemid="' + value.id + '">'
+					+ '<div class="list_first_row">' + value.title + '</div>'
+					+ '<div class="list_last_row">' + value.due_date + '</div>'
+				+ '</div>';
+		},
+		match: function(value){
+			return '<div id="match" data-template="match">'
+					+ '<div id="user_info">'
+						+ '<div id="user_general">'
+							+ '<img src="" id="match_avatar" data-refresh="avatar"/>'
+							+ '<span id="match_name" data-refresh="name"></span>'
+						+ '</div>'
+						+ '<div id="user_description">'
+							+ '<p>I love broccoli pizza!</p>'
+						+ '</div>'
+					+ '</div>'
+				+ '</div>';
 		}
 	},
 	ajax: function(service, data, response){
 		// CHECK FOR CONNECTION HERE #TODO
-
-		switch(service){
-			case "user":
-				url = app.BASE_URL + "/user";
-				type = 'POST';
-				break;
-			case "shopping_list_overview":
-				url = app.BASE_URL + "/list";
-				type = 'GET';
-				break;
-			case "create_shopping_list":
-				url = app.BASE_URL + "/list";
-				type = 'POST';
-				break;
-			default:
-				// ERROR CLASS
-		}
-		//needs to be there on every call
-		data.api_token = localStorage.getItem("api_token");
-
-		$.ajaxSetup({
-			beforeSend: function(xhr) {
-		        xhr.withCredentials = true;
-		        xhr.setRequestHeader('Accept', 'application/json');
-		    }
-		});
-		$.ajax({
-			url: url,
-			data: data,
-			type: type,
-			error: function(data) {
-				response(data);
-	            if( data.status === 422 ) {
-		            //process validation errors here.
-		            var errors = data.responseJSON; 
-
-		            console.log(errors);
-	            } else {
-
-	            }
-			},
-			success: function(data) {
-				response(data);
+		if(!navigator.onLine){
+			cache = localStorage.getItem(service);
+			if(cache && cache.received + 1000 > Date.now()){
+				response(cache);
 			}
-		});
+		}else{
+			switch(service){
+				case "user":
+					url = app.BASE_URL + "/user";
+					type = 'POST';
+					break;
+				case "shopping_list_overview":
+					url = app.BASE_URL + "/list";
+					type = 'GET';
+					break;
+				case "create_shopping_list":
+					url = app.BASE_URL + "/list";
+					type = 'POST';
+					break;
+				case "shopping_list":
+					url = app.BASE_URL + "/list/" + data.id;
+					type = 'GET';
+					break;
+				default:
+					// ERROR CLASS
+			}
+			//needs to be there on every call
+			data.api_token = localStorage.getItem("api_token");
+
+			$.ajaxSetup({
+				beforeSend: function(xhr) {
+			        xhr.withCredentials = true;
+			        xhr.setRequestHeader('Accept', 'application/json');
+			    }
+			});
+			$.ajax({
+				url: url,
+				data: data,
+				type: type,
+				error: function(data) {
+		            if( data.status === 422 ) {
+			            //process validation errors here.
+			            var errors = data.responseJSON; 
+
+			            console.log(errors);
+		            } else {
+
+		            }
+					response(data);
+				},
+				success: function(data) {
+					data.received = Date.now();
+
+					response(data);
+					localStorage.setItem(service, data);
+				}
+			});
+		}
 		
 		//app.update();
 	},
@@ -230,19 +264,8 @@ var app = {
 
 
 //HELPER
-$.fn.serializeObject = function()
-{
-    var o = {};
-    var a = this.serializeArray();
-    $.each(a, function() {
-        if (o[this.name] !== undefined) {
-            if (!o[this.name].push) {
-                o[this.name] = [o[this.name]];
-            }
-            o[this.name].push(this.value || '');
-        } else {
-            o[this.name] = this.value || '';
-        }
-    });
-    return o;
-};
+
+// for current timestamp
+if (!Date.now) {
+    Date.now = function() { return new Date().getTime(); }
+}
