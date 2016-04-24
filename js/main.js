@@ -163,7 +163,7 @@ var app = {
 		list : function(value){
 			return '<div class="list" data-elemid="' + value.id + '">'
 					+ '<div class="list_first_row">' + value.title + '</div>'
-					+ '<div class="list_last_row">' + value.due_date + '</div>'
+					+ '<div class="list_last_row">' + value.due_date + ' <span class="list_distance">' + app.distancetoString(value.latitude, value.longitude, app.lat,app.long) + '</span></div>'
 				+ '</div>';
 		},
 		match: function(value){
@@ -258,6 +258,21 @@ var app = {
 	    	app.lat = positon.coords.latitude;
 	    	app.long = positon.coords.longitude;
 	    }
+	},
+	distancetoString: function(lat1, lon1, lat2, lon2) {
+		var p = 0.017453292519943295;    // Math.PI / 180
+		var c = Math.cos;
+		var a = 0.5 - c((lat2 - lat1) * p)/2 + 
+			c(lat1 * p) * c(lat2 * p) * 
+			(1 - c((lon2 - lon1) * p))/2;
+		var d = 12742 * Math.asin(Math.sqrt(a));
+		if(d < 1){
+			return "very close";
+		}
+		if(d < 10){
+			return "nearby";
+		}
+		return "far, far away...";
 	}
 
 };
@@ -269,3 +284,5 @@ var app = {
 if (!Date.now) {
     Date.now = function() { return new Date().getTime(); }
 }
+
+// for lat-long distances
