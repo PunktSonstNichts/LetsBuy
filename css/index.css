@@ -202,9 +202,9 @@ margin: 5vh 5vw;
 	flex-direction: column;
 }
 #match_avatar{
-	width: 20vw;
-	height: 20vw;
-	border-radius: 20vw;
+	width: 20vmin;
+    height: 20vmin;
+    border-radius: 20vmin;
 }
 #user_description{
 	padding: 5vmin;

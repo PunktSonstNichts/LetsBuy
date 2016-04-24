@@ -156,7 +156,7 @@ var app = {
 	},
 	templatelist: {
 		list : function(value){
-			return "<div class='list'><div class='list_first_row'>" + value.title + "</div><div class='list_last_row'>" + value.due_date + "</div></div>";
+			return "<div class='list' data-elemid='" + value.id + "'><div class='list_first_row'>" + value.title + "</div><div class='list_last_row'>" + value.due_date + "</div></div>";
 		}
 	},
 	ajax: function(service, data, response){
