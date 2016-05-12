@@ -1,5 +1,6 @@
 var app = {
-	BASE_URL: "http://139.59.164.70", //Because I will always love you
+	//BASE_URL: "http://139.59.164.70", //Because I will always love you
+	BASE_URL: "http://127.0.0.1/LetzBuyServer",
 	lat: 0.0,
 	long: 0.0,
 	init: function(){
@@ -61,15 +62,16 @@ var app = {
 		// Login form submit
 		$(document).on('submit', 'form.authform', function(e) {
 			e.preventDefault();
-			app.ajax("user", {name: $(this).children("*[name=name]").val(), email: $(this).children("*[name=email]").val(), password: $(this).children("*[name=password]").val()}, (function(data){
+			app.ajax("user", {name: $(this).children("*[name=name]").val(), email: $(this).children("*[name=email]").val(), password: $(this).children("*[name=password]").val()}, (function(response){
 
-				console.log(data);
-				if(data.api_token){
-					localStorage.setItem("api_token", data.api_token);
+				console.log(response);
+				console.log(response.user);
+				if(response.user.api_token){
+					localStorage.setItem("api_token", response.user.api_token);
 					$("#content").html(app.template("home_page"));
-					app.user(data);
+					app.user(response.user);
 				}else{
-					alert(data.error);
+					alert(response.msg);
 				}
 			}));
 		});
@@ -103,12 +105,12 @@ var app = {
 	update: function(){
 		if(localStorage.getItem("api_token") != null){
 			console.log("request data from api_token");
-			app.ajax("user", {api_token: localStorage.getItem("api_token")}, function(data){
-				console.log(data);
-				if(data.api_token){
+			app.ajax("user", {api_token: localStorage.getItem("api_token")}, function(response){
+				console.log(response);
+				if(response.user.api_token){
 					console.log("Auto Login");
-					localStorage.setItem("api_token", data.api_token);
-					app.user(data);
+					localStorage.setItem("api_token", response.user.api_token);
+					app.user(response.user);
 					$("#content").html(app.template("home_page"));
 				}else{
 					$("#content").html(app.template("auth"));
@@ -127,23 +129,22 @@ var app = {
 				$("*[data-refresh='name']").html(data.name);
 			}
 		}
-			app.ajax("shopping_list_overview", {}, (function(data){
-
-				console.log(data);
-				if(data.length > 0){
-					$(document).on('click', '.list', function(){
-						app.ajax("shopping_list", {id : $(this).attr("data-elemid")}, (function(data){
-							console.log(data);
-						}));
-					});
-					$.each(data, function( index, value ) {
-						console.log(value);
-						$(".currentlists").append(app.templatelist.list(value));
-					});
-				}else{
-					alert("no lists created yet");
-				}
-			}));
+		app.ajax("shopping_list_overview", {}, (function(data){
+			console.log(data);
+			if(data.length > 0){
+				$(document).on('click', '.list', function(){
+					app.ajax("shopping_list", {id : $(this).attr("data-elemid")}, (function(data){
+						console.log(data);
+					}));
+				});
+				$.each(data, function( index, value ) {
+					console.log(value);
+					$(".currentlists").append(app.templatelist.list(value));
+				});
+			}else{
+				alert("no lists created yet");
+			}
+		}));
 		
 	},
 	template: function(name){
@@ -190,11 +191,11 @@ var app = {
 		}else{
 			switch(service){
 				case "user":
-					url = app.BASE_URL + "/user";
+					url = app.BASE_URL + "/user.php";
 					type = 'POST';
 					break;
 				case "shopping_list_overview":
-					url = app.BASE_URL + "/list";
+					url = app.BASE_URL + "/list.php";
 					type = 'GET';
 					break;
 				case "create_shopping_list":
@@ -217,6 +218,7 @@ var app = {
 			        xhr.setRequestHeader('Accept', 'application/json');
 			    }
 			});
+			console.log("Sending data");
 			$.ajax({
 				url: url,
 				data: data,
@@ -232,7 +234,9 @@ var app = {
 		            }
 					response(data);
 				},
-				success: function(data) {
+				success: function(data, textStatus, jqXHR) {
+					data = data.responseText;
+					console.log(data);
 					data.received = Date.now();
 
 					response(data);
