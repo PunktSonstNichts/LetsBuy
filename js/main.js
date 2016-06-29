@@ -8,9 +8,10 @@ var app = {
 		// stuff not worth creating a node for
 		// fill new shoppinglist form
 		$("#itemholder").append(app.template("list_item"));
-		//TEMP
+		//Should get moved
 		$(document).on("click touchstart", "#logout", function(){
 			localStorage.removeItem("api_token");
+			localStorage.removeItem("user");
 			location.reload();
 		});
 
@@ -37,8 +38,6 @@ var app = {
 			e.preventDefault();
 			console.log($(this).serializeObject());
 			data = $(this).serializeObject();
-			data.latitude = app.lat;
-			data.longitude = app.long;
 			app.ajax("create_shopping_list", data, (function(data){
 				if(data.success){
 					$("#content").html(app.template("home_page"));
@@ -62,14 +61,19 @@ var app = {
 		// Login form submit
 		$(document).on('submit', 'form.authform', function(e) {
 			e.preventDefault();
+			alert("sending data");
 			app.ajax("user", {name: $(this).children("*[name=name]").val(), email: $(this).children("*[name=email]").val(), password: $(this).children("*[name=password]").val()}, (function(response){
-
+				alert("received data");
+				user = response.user;
 				console.log(response);
-				console.log(response.user);
-				if(response.user.api_token){
-					localStorage.setItem("api_token", response.user.api_token);
+				console.log(user);
+				
+				alert(user.api_token);
+				alert(user.name);
+				if(user.api_token){
+					localStorage.setItem("api_token", user.api_token);
 					$("#content").html(app.template("home_page"));
-					app.user(response.user);
+					app.user(user);
 				}else{
 					alert(response.msg);
 				}
@@ -95,14 +99,20 @@ var app = {
 		});
 		// For the rest
 		$(document).on("click touchstart","*[data-templatelink][data-templatelink!='']",function() {
+			//check vor fullscreen
+			fullscreen = $(this).attr("data-fullscreen") ? $(this).attr("data-fullscreen") : false;
+			console.log(fullscreen);
 			// append back button
 			$("#back_btn").show();
 			// follow link
-			$("#content").html(app.template($(this).attr("data-templatelink")));
+			$("#content").html(app.template($(this).attr("data-templatelink"), fullscreen));
 		});
 
 	},
 	update: function(){
+		$("*[data-refresh='bgimg']").css('background-image', 'url(http://192.168.1.8/LetzBuyServer/images/background/1.jpg)');
+		
+		
 		if(localStorage.getItem("api_token") != null){
 			console.log("request data from api_token");
 			app.ajax("user", {api_token: localStorage.getItem("api_token")}, function(response){
@@ -113,20 +123,26 @@ var app = {
 					app.user(response.user);
 					$("#content").html(app.template("home_page"));
 				}else{
-					$("#content").html(app.template("auth"));
+					$("#content").html(app.template("auth", true));
 				}
 			});
 		}else{
-			$("#content").html(app.template("auth"));
+			$("#content").html(app.template("auth", true));
 		}
+		
 	},
 	user: function(data){
+		console.log("update user");
+		console.log(data);
 		if(data){
-			if(data.picture){
-				$("*[data-refresh='avatar']").attr("src", data.picture);
+			if(data.image){
+				console.log("refreshed user avatar: " + data.image.src);
+				$("*[data-refresh='avatar']").attr("src", data.image.src);
 			}
-			if(data.name){
-				$("*[data-refresh='name']").html(data.name);
+			if(data.first_name && data.last_name){
+				$("*[data-refresh='username']").html(data.first_name + " " + data.last_name);
+				$("*[data-refresh='username_first']").html(data.first_name);
+				$("*[data-refresh='username_last']").html(data.last_name);
 			}
 		}
 		app.ajax("shopping_list_overview", {}, (function(data){
@@ -147,17 +163,20 @@ var app = {
 		}));
 		
 	},
-	template: function(name){
+	template: function(name, fullscreen = false){
 
-		console.log("Building template for '" + name + "'");
-		if(name == "auth"){
+		console.log("Building template for '" + name + "' ");
+		if(fullscreen){
 			$("#app").addClass("hiddenHeading");
+			console.log("FULLSCREEN");
 		}else{
 			$("#app").removeClass("hiddenHeading");
+			console.log("NO FULLSCREEN");
 		}
 
 		html = $("*[data-template='" + name + "']").wrap('<p/>').parent().html();
 		$("*[data-template='" + name + "']").unwrap('<p/>');
+				
 		return html;
 	},
 	templatelist: {
@@ -184,7 +203,7 @@ var app = {
 	ajax: function(service, data, response){
 		// CHECK FOR CONNECTION HERE #TODO
 		if(!navigator.onLine){
-			cache = localStorage.getItem(service);
+			cache = JSON.parse(localStorage.getItem(service));
 			if(cache && cache.received + 1000 > Date.now()){
 				response(cache);
 			}
@@ -211,8 +230,12 @@ var app = {
 			}
 			//needs to be there on every call
 			data.api_token = localStorage.getItem("api_token");
+			//needed for all list features
+			data.latitude = app.lat;
+			data.longitude = app.long;
 
 			$.ajaxSetup({
+				dataType: 'json', 
 				beforeSend: function(xhr) {
 			        xhr.withCredentials = true;
 			        xhr.setRequestHeader('Accept', 'application/json');
@@ -235,12 +258,11 @@ var app = {
 					response(data);
 				},
 				success: function(data, textStatus, jqXHR) {
-					data = data.responseText;
 					console.log(data);
 					data.received = Date.now();
 
 					response(data);
-					localStorage.setItem(service, data);
+					localStorage.setItem(service, JSON.stringify(data));
 				}
 			});
 		}

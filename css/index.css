@@ -9,7 +9,7 @@ body, html{
 	margin: 0px !important;
 	padding: 0px !important;
 	font-family: "Helvetica";
-	background-color: rgb(250, 250, 251);
+	background-color: rgb(249,241,229);
 }
 
 #templates{
@@ -35,6 +35,7 @@ body, html{
 	display: flex;
 	justify-content: space-between;
 	border-bottom: 1px solid rgb(188, 188, 188);
+	color: rgb(133,68,66);
 }
 #back_btn{
 	display: hidden;
@@ -79,9 +80,8 @@ body, html{
 	border-left: 1px solid rgb(188, 188, 188);
 }
 .navigation_item.active{
-	background-color: rgb(0,174,219);
-	background-color: ;
-	color: white;
+	background-color: rgb(190,155,123);
+	color: rgb(133,68,66);
 }
 /* LOGIN & REGISTER  */
 #app.hiddenHeading > #heading{
@@ -94,18 +94,49 @@ body, html{
 	transform: translate3d(0, -20vh, 0);
 	visibility: visible;
 }
-#auth{
+#auth, #auth_bg, #auth_helper{
 	position: absolute;
 	height: 100vh;
 	width: 100vw;
 	overflow: hidden;
+}
+#auth_helper{
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	flex-direction: column;
+	color: rgb(133,68,66);
 }
-#login_form, #register_form{
+#auth_bg{
+	height: 120vh;
+	width: 120vw;
+	top: -10vh;
+	left: -10vw;
+	background-size:cover;
+	-khtml-opacity:.50; 
+	-moz-opacity:.50; 
+	-ms-filter:"alpha(opacity=50)";
+	filter:alpha(opacity=50);
+	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=0.5);
+	opacity:.50; 
+	-webkit-filter: blur(5px) grayscale(20%);
+	-moz-filter: blur(5px) grayscale(20%);
+	-o-filter: blur(5px) grayscale(20%);
+	-ms-filter: blur(5px) grayscale(20%);
+	filter: blur(5px) grayscale(20%);
+}
+#login_form, #register_form{    
+background-color: rgba(255, 255, 255, 0.6);
+padding: 3vmax 2vmin;
+border-radius: 1vmin;
+border: 1px solid rgb(244, 244, 244)
+-webkit-transition: all 0.56s ease-in-out;
+transition: all 0.56s ease-in-out;
 margin: 5vh 5vw;
+}
+#login_heading{
+	font-weight: bold;
+	font-size: 1.4em;
 }
 #login_form.hidden, #register_form.hidden{
 	top: 100vh;
@@ -214,4 +245,41 @@ margin: 5vh 5vw;
 #user_description > p:before, #user_description > p:after{
 	content: '"';
 	color: rgb(33,33,33);
+}
+
+/* USER PAGE */
+.userpage_main{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+    width: 80vw;
+	margin: 0 10vw;
+}
+.userpage_avatarwrapper{
+width: 30vmin;
+height: 30vmin;
+padding: 5vmin;
+}
+.userpage_avatar{
+width: 25vmin;
+height: 25vmin;
+border-radius: 20vmin;
+padding: 2.5vmin;
+}
+.userpage_namewrapper{
+width: 50vmin;
+height: 30vmin;
+}
+.userpage_username_first{
+    width: 60vmin;
+    height: 20vmin;
+    line-height: 20vmin;
+    font-size: 15vmin;
+    font-weight: bold;
+}
+.userpage_username_last{
+	width: 50vmin;
+    height: 10vmin;
+    line-height: 10vmin;
+    font-size: 7.5vmin;
 }
