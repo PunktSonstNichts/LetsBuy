@@ -13,13 +13,25 @@ body, html{
 }
 
 #templates{
-	display: hidden;
+	display: none;
 	height:0px;
 	width: 0px;
 	position: absolute;
 	overflow: hidden;
 	/* opacity: 0; */
-} 
+}
+
+#error{
+	position:absolute;
+	width: 100vw;
+	/*top: 0px;*/
+	background-color: rgb(190,16,60);
+	border-bottom: 1px solid rgb(169,14,53);
+	padding: 1vmin;
+	color: white;
+	display: none;
+	text-align: center;
+}
 #heading{
 	width: 100vw;
 	height: 20vh;
@@ -89,7 +101,7 @@ body, html{
 	transform: translate3d(0, -40.1vh, 0);
 	visibility: visible;
 }
-#app.hiddenHeading > #content{
+#app.hiddenHeading > #content_wrapper{
 	-webkit-transform: translate3d(0, -20vh, 0);
 	transform: translate3d(0, -20vh, 0);
 	visibility: visible;
@@ -121,7 +133,7 @@ margin: 5vh 5vw;
 }
 
 /* CONTENT STARTS HERE */
-#content{
+#content_wrapper{
 	margin-top: 20vh;
 }
 #create_new_list{

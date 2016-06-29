@@ -66,12 +66,12 @@ var app = {
 
 				console.log(response);
 				console.log(response.user);
-				if(response.user.api_token){
+				if(response.success && response.user.api_token){
 					localStorage.setItem("api_token", response.user.api_token);
 					$("#content").html(app.template("home_page"));
 					app.user(response.user);
 				}else{
-					alert(response.msg);
+					app.error(response.msg);
 				}
 			}));
 		});
@@ -107,7 +107,7 @@ var app = {
 			console.log("request data from api_token");
 			app.ajax("user", {api_token: localStorage.getItem("api_token")}, function(response){
 				console.log(response);
-				if(response.user.api_token){
+				if(response.success && response.user.api_token){
 					console.log("Auto Login");
 					localStorage.setItem("api_token", response.user.api_token);
 					app.user(response.user);
@@ -145,7 +145,7 @@ var app = {
 				alert("no lists created yet");
 			}
 		}));
-		
+
 	},
 	template: function(name){
 
@@ -181,12 +181,17 @@ var app = {
 				+ '</div>';
 		}
 	},
+	error: function(msg, duration = 1000){
+		$("#error_msg").html(msg);
+		$("#error").show();
+	},
 	ajax: function(service, data, response){
-		// CHECK FOR CONNECTION HERE #TODO
 		if(!navigator.onLine){
 			cache = localStorage.getItem(service);
 			if(cache && cache.received + 1000 > Date.now()){
 				response(cache);
+			}else{
+				response({success: false, msg: "Connection to the internet needed, but not possible"});
 			}
 		}else{
 			switch(service){
@@ -224,15 +229,9 @@ var app = {
 				data: data,
 				type: type,
 				error: function(data) {
-		            if( data.status === 422 ) {
-			            //process validation errors here.
-			            var errors = data.responseJSON; 
-
-			            console.log(errors);
-		            } else {
-
-		            }
-					response(data);
+			          data.success = false;
+								data.msg = "Sorry, something went wrong. Seems like there is an http error somewhere.";
+								response(data);
 				},
 				success: function(data, textStatus, jqXHR) {
 					data = data.responseText;
@@ -244,7 +243,7 @@ var app = {
 				}
 			});
 		}
-		
+
 		//app.update();
 	},
 	geo: function(){
@@ -266,8 +265,8 @@ var app = {
 	distancetoString: function(lat1, lon1, lat2, lon2) {
 		var p = 0.017453292519943295;    // Math.PI / 180
 		var c = Math.cos;
-		var a = 0.5 - c((lat2 - lat1) * p)/2 + 
-			c(lat1 * p) * c(lat2 * p) * 
+		var a = 0.5 - c((lat2 - lat1) * p)/2 +
+			c(lat1 * p) * c(lat2 * p) *
 			(1 - c((lon2 - lon1) * p))/2;
 		var d = 12742 * Math.asin(Math.sqrt(a));
 		if(d < 1){

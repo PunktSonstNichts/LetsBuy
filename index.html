@@ -2,16 +2,16 @@
 <html>
 	<head>
 		<meta charset="utf-8" />
-       <meta name="format-detection" content="telephone=no" />
-        <meta name="msapplication-tap-highlight" content="no" />
-        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
-        <meta name="viewport" data-type="standard" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
-        <meta name="viewport" data-type="IOS" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, target-densitydpi=device-dpi" />
+		<meta name="format-detection" content="telephone=no" />
+		<meta name="msapplication-tap-highlight" content="no" />
+		<!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+		<meta name="viewport" data-type="standard" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+		<meta name="viewport" data-type="IOS" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, target-densitydpi=device-dpi" />
 		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <link rel="stylesheet" type="text/css" href="css/framework.css" />
-        <link rel="stylesheet" type="text/css" href="css/index.css" />
-        <script type="text/javascript" src="external/jquery/jquery-2.2.3.min.js"></script>
-        <script type="text/javascript" src="js/main.js"></script>
+		<link rel="stylesheet" type="text/css" href="css/framework.css" />
+		<link rel="stylesheet" type="text/css" href="css/index.css" />
+		<script type="text/javascript" src="external/jquery/jquery-2.2.3.min.js"></script>
+		<script type="text/javascript" src="js/main.js"></script>
 		<title>LetzBuy!</title>
 	</head>
 	<body>
@@ -40,9 +40,14 @@
 					</div>
 				</div>
 			</div>
-			<div id="content">
-				<h1>Ooops</h1>
-				<p>Seems like something went horrbile wrong</p>
+			<div id="content_wrapper">
+				<div id="error">
+					<span id="error_msg"></span>
+				</div>
+				<div id="content">
+					<h1>Ooops</h1>
+					<p>Seems like something went horrbile wrong</p>
+				</div>
 			</div>
 		</div>
 		<!-- templates down here because of multiple ids in one .html -> confuses Javascript -->
@@ -116,11 +121,11 @@
 				<div class="userpage_general">
 					<p class="userpage_description" data-refrsh="userdescription"></p>
 				</div>
-				
+
 			</div>
 		</div>
 		<script type="text/javascript">
 			app.init();
 		</script>
 	</body>
-</html> 
+</html>
