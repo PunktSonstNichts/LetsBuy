@@ -13,22 +13,45 @@ var app = {
 			localStorage.removeItem("api_token");
 			location.reload();
 		});
-
-		$(document).on('unblur keyup', '.item > *', function(e){
+		$("*[data-templateautoload][data-templateautoload!='']").each(function(){
+			$(this).html(app.template($(this).attr("data-templateautoload"), $(this).attr("data-templatefullpage")));
+		});
+		var autocomplete_cache = {};
+		$(document).on('unblur keyup', '.item', function(e){
 			//should create a new one if everything is full
 			target = $(this);
 			console.log("Background check");
-			everything_full = true;
-			$("#itemholder").children(".item").each(function(){
-				console.log($(this).children(".nlname_input").val());
-				console.log($(this).children(".nlquantity_input").val());
-				if($(this).children(".nlname_input").val() == "" || $(this).children(".nlquantity_input").val() == ""){
-					everything_full = false;
+			everything_full = false;
+			var query = $(this).find(".nlname_input").val();
+			console.log(query);
+			if(query != ""){
+				if($(this).find(".nlquantity_input").val() != "" && !$(this).hasClass("line_added")){
+					everything_full = true;
+					$(this).addClass("line_added");
 				}
-			});
+				// autocomplete stuff
+				if(query.length >= 2){
+						//Check if we've searched for this term before
+						if(query in autocomplete_cache){
+								results = autocomplete_cache[query];
+						}else{
+								//Case insensitive search for our people array
+								var results = $.grep(JSON.parse(localStorage.getItem("products")), function(item){
+										return item.product_name.search(RegExp(query, "i")) != -1;
+								});
+								//Add results to cache
+								autocomplete_cache[query] = results;
+						}
+						var autocomplete_box = $(this).find(".item_autocomplete");
+						autocomplete_box.html("");
+						for(key in results){
+							autocomplete_box.append(app.templatelist.autocomplete_item(results[key]));
+						}
+				}
+			}
 			console.log(everything_full);
 			if(everything_full){
-				$("#itemholder").append(app.template("list_item"));
+				$("#itemholder").append(app.template("list_item", "keep"));
 			}
 			target.focus();
 		});
@@ -40,7 +63,7 @@ var app = {
 			data.latitude = app.lat;
 			data.longitude = app.long;
 			app.ajax("create_shopping_list", data, (function(data){
-				if(data.success){
+				if(data.status == "ok"){
 					$("#content").html(app.template("home_page"));
 					app.user(data);
 				}else{
@@ -48,6 +71,7 @@ var app = {
 				}
 			}));
 		});
+
 		app.update();
 
 		// Geo stuff
@@ -66,9 +90,13 @@ var app = {
 
 				console.log(response);
 				console.log(response.user);
-				if(response.success && response.user.api_token){
+				if(response.success && response.status == "ok" && response.user.api_token){
 					localStorage.setItem("api_token", response.user.api_token);
-					$("#content").html(app.template("home_page"));
+					if(response.user.last_heartbeat == '0000-00-00 00:00:00'){
+						$("#content").html(app.template("welcome_page", true));
+					}else{
+						$("#content").html(app.template("home_page"));
+					}
 					app.user(response.user);
 				}else{
 					app.error(response.msg);
@@ -98,73 +126,84 @@ var app = {
 			// append back button
 			$("#back_btn").show();
 			// follow link
-			$("#content").html(app.template($(this).attr("data-templatelink")));
+			$("#content").html(app.template($(this).attr("data-templatelink"), $(this).attr("data-templatefullpage")));
 		});
 
 	},
 	update: function(){
 		if(localStorage.getItem("api_token") != null){
 			console.log("request data from api_token");
-			app.ajax("user", {api_token: localStorage.getItem("api_token")}, function(response){
+			app.ajax("user", {}, function(response){
 				console.log(response);
-				if(response.success && response.user.api_token){
+				if(response.success && response.status == "ok" && response.user.api_token){
 					console.log("Auto Login");
 					localStorage.setItem("api_token", response.user.api_token);
 					app.user(response.user);
 					$("#content").html(app.template("home_page"));
 				}else{
-					$("#content").html(app.template("auth"));
+					$("#content").html(app.template("auth", true));
 				}
 			});
 		}else{
-			$("#content").html(app.template("auth"));
+			$("#content").html(app.template("auth", true));
 		}
 	},
 	user: function(data){
 		if(data){
-			if(data.picture){
-				$("*[data-refresh='avatar']").attr("src", data.picture);
+			if(data.image){
+				$("*[data-refresh='avatar']").attr("src", data.image.src).attr("alt", data.image.name);
 			}
-			if(data.name){
-				$("*[data-refresh='name']").html(data.name);
+			if(data.first_name && data.last_name){
+				$("*[data-refresh='username_first']").html(data.first_name);
+				$("*[data-refresh='username_last']").html(data.last_name);
+			}
+			if(data.description){
+				$("*[data-refresh='userdescription']").html(data.description);
 			}
 		}
-		app.ajax("shopping_list_overview", {}, (function(data){
+		app.ajax("product_overview", {}, (function(data){
+			localStorage.setItem("products", JSON.stringify(data.products));
 			console.log(data);
-			if(data.length > 0){
+		}));
+		app.ajax("shopping_list_overview", {}, (function(data){
+			list = data.list;
+			console.log(list);
+			if(list != null && list.length > 0){
 				$(document).on('click', '.list', function(){
 					app.ajax("shopping_list", {id : $(this).attr("data-elemid")}, (function(data){
 						console.log(data);
 					}));
 				});
-				$.each(data, function( index, value ) {
+				$.each(list, function( index, value ) {
 					console.log(value);
 					$(".currentlists").append(app.templatelist.list(value));
 				});
 			}else{
-				alert("no lists created yet");
+				//alert("no lists created yet");
 			}
 		}));
 
 	},
-	template: function(name){
+	template: function(name, fullscreen = false){
 
 		console.log("Building template for '" + name + "'");
-		if(name == "auth"){
-			$("#app").addClass("hiddenHeading");
-		}else{
-			$("#app").removeClass("hiddenHeading");
+		if(fullscreen != "keep"){
+			if(fullscreen){
+				$("#app").addClass("hiddenHeading");
+			}else{
+				$("#app").removeClass("hiddenHeading");
+			}
 		}
 
-		html = $("*[data-template='" + name + "']").wrap('<p/>').parent().html();
-		$("*[data-template='" + name + "']").unwrap('<p/>');
+		html = $("#templates *[data-template='" + name + "']").wrap('<p/>').parent().html();
+		$("#templates *[data-template='" + name + "']").unwrap('<p/>');
 		return html;
 	},
 	templatelist: {
 		list : function(value){
 			return '<div class="list" data-elemid="' + value.id + '">'
 					+ '<div class="list_first_row">' + value.title + '</div>'
-					+ '<div class="list_last_row">' + value.due_date + ' <span class="list_distance">' + app.distancetoString(value.latitude, value.longitude, app.lat,app.long) + '</span></div>'
+					+ '<div class="list_last_row">' + value.duedate + ' <span class="list_distance">' + app.distancetoString(value.lat, value.long, app.lat,app.long) + '</span></div>'
 				+ '</div>';
 		},
 		match: function(value){
@@ -179,16 +218,25 @@ var app = {
 						+ '</div>'
 					+ '</div>'
 				+ '</div>';
+		},
+		autocomplete_item: function(value){
+			return '<div class="item_ac_card">' +
+									'<div class="item_ac_card_head">' + value.product_name + '</div>' +
+									'<span>meistens werden ' + value.standard_quantity + ' ' + ((value.quantity_name != null) ? value.quantity_name : '')  + ' gekauft</span>' +
+						 '</div>';
 		}
 	},
 	error: function(msg, duration = 1000){
+		console.error(msg);
 		$("#error_msg").html(msg);
-		$("#error").show();
+		$("#error").show(0).delay(5000).fadeOut(1);
 	},
 	ajax: function(service, data, response){
-		if(!navigator.onLine){
-			cache = localStorage.getItem(service);
-			if(cache && cache.received + 1000 > Date.now()){
+		if(navigator.onLine){
+			cache = JSON.parse(localStorage.getItem(service));
+			console.log(cache);
+			console.log(Date.now());
+			if(cache && cache.received + (60000 * 60 * 24) > Date.now()){ // cache lasts a day
 				response(cache);
 			}else{
 				response({success: false, msg: "Connection to the internet needed, but not possible"});
@@ -204,13 +252,16 @@ var app = {
 					type = 'GET';
 					break;
 				case "create_shopping_list":
-					url = app.BASE_URL + "/list";
+					url = app.BASE_URL + "/create_list.php";
 					type = 'POST';
 					break;
 				case "shopping_list":
 					url = app.BASE_URL + "/list/" + data.id;
 					type = 'GET';
 					break;
+				case "product_overview":
+					url = app.BASE_URL + "/products.php";
+					type = 'GET';
 				default:
 					// ERROR CLASS
 			}
@@ -228,18 +279,22 @@ var app = {
 				url: url,
 				data: data,
 				type: type,
+				dataType: "jsonp",
 				error: function(data) {
-			          data.success = false;
-								data.msg = "Sorry, something went wrong. Seems like there is an http error somewhere.";
-								response(data);
+								response({success: false, msg: "Sorry, something went wrong. Seems like there is an http error somewhere."});
 				},
 				success: function(data, textStatus, jqXHR) {
-					data = data.responseText;
+					//data = data.responseText;
 					console.log(data);
 					data.received = Date.now();
+					data.success = true;
 
 					response(data);
-					localStorage.setItem(service, data);
+					if(data.status == "ok"){
+						localStorage.setItem(service, JSON.stringify(data));
+					}else if(data.status == "error"){
+						app.error(data.msg);
+					}
 				}
 			});
 		}
@@ -288,4 +343,20 @@ if (!Date.now) {
     Date.now = function() { return new Date().getTime(); }
 }
 
-// for lat-long distances
+// For serializing Objects
+$.fn.serializeObject = function()
+{
+   var o = {};
+   var a = this.serializeArray();
+   $.each(a, function() {
+       if (o[this.name]) {
+           if (!o[this.name].push) {
+               o[this.name] = [o[this.name]];
+           }
+           o[this.name].push(this.value || '');
+       } else {
+           o[this.name] = this.value || '';
+       }
+   });
+   return o;
+};

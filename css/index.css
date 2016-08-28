@@ -1,6 +1,7 @@
 *{
 	-webkit-transition: all 0.2s ease-in-out;
 	transition: all 0.2s ease-in-out;
+	color: rgb(119,79,56);
 }
 *:focus, *:active {
     outline: none;
@@ -25,12 +26,16 @@ body, html{
 	position:absolute;
 	width: 100vw;
 	/*top: 0px;*/
-	background-color: rgb(190,16,60);
-	border-bottom: 1px solid rgb(169,14,53);
+	background-color: rgb(224,142,121);
+	border-bottom: 1px solid rgb(219,137,116);
 	padding: 1vmin;
 	color: white;
 	display: none;
 	text-align: center;
+  box-sizing: border-box;
+}
+#error > span{
+	color: white !important;
 }
 #heading{
 	width: 100vw;
@@ -91,9 +96,7 @@ body, html{
 	border-left: 1px solid rgb(188, 188, 188);
 }
 .navigation_item.active{
-	background-color: rgb(0,174,219);
-	background-color: ;
-	color: white;
+	background-color: rgb(197,224,220);
 }
 /* LOGIN & REGISTER  */
 #app.hiddenHeading > #heading{
@@ -117,7 +120,7 @@ body, html{
 	flex-direction: column;
 }
 #login_form, #register_form{
-margin: 5vh 5vw;
+	margin: 5vh 5vw;
 }
 #login_form.hidden, #register_form.hidden{
 	top: 100vh;
@@ -126,12 +129,50 @@ margin: 5vh 5vw;
 	position: absolute;
 }
 .login_input {
-    display: inline-box;
-    width: 100%;
-    margin:1vh 0;
-    box-sizing: border-box;
+  display: inline-box;
+  width: 100%;
+  margin:1vh 0;
+  box-sizing: border-box;
+}
+/* WELCOME PAGE */
+.welcome_page{
+	width: 100vw;
+	height: 100vh;
+	display: block;
+	box-sizing: border-box;
+  padding: 5vh 5vw;
+	position: absolute;
+}
+#welcome_page1{
+	background-color:
+}
+.welcome_page_heading{
+	width: 100%;
+	height: 10vh;
+	text-align: center;
+	line-height: 10vh;
 }
 
+.welcome_page_content{
+	width: 100%;
+	height: 70vh;
+}
+#welcome_page_listoverview{
+	height: 10vh;
+}
+#welcome_page_list{
+	height: 60vh;
+	overflow-y: auto;
+}
+.welcome_page_nav{
+	width: 100%;
+  padding-top: 2vh;
+	display: flex;
+	justify-content: space-between;
+	box-sizing: border-box;
+  border-top: 1px solid rgb(236,229,206);
+	background-color: rgb(250, 250, 251);
+}
 /* CONTENT STARTS HERE */
 #content_wrapper{
 	margin-top: 20vh;
@@ -175,13 +216,10 @@ margin: 5vh 5vw;
 	flex-direction: column;
 }
 #itemheading > input:first-child{
-	width: 50vw;
+	width: 50%;
 }
 #itemheading > input:last-child{
 	width: 10vw;
-}
-#itemholder > * > input{
-	width: 30vw;
 }
 #itemsubmit{
 	width: 100%;
@@ -192,13 +230,32 @@ margin: 5vh 5vw;
 	box-sizing: border-box;
 }
 .item{
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
 	width: 100%;
 	margin: 4vh 0;
 }
+.item_input_wrapper{
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
 
+.nlquantity_input{
+	width: 30%;
+}
+
+.item_autocomplete{
+	margin-top: 2vmin;
+}
+.item_ac_card{
+	border: 1px solid;
+	border-radius: 4px;
+	padding: 5px;
+	margin: 10px 0px;
+}
+.item_ac_card_head {
+  font-weight: bold;
+  font-size: 1.5em;
+}
 /* MATCH */
 #user_info{
 	height: 25vh;
@@ -216,8 +273,8 @@ margin: 5vh 5vw;
 }
 #match_avatar{
 	width: 20vmin;
-    height: 20vmin;
-    border-radius: 20vmin;
+  height: 20vmin;
+  border-radius: 20vmin;
 }
 #user_description{
 	padding: 5vmin;
@@ -226,4 +283,44 @@ margin: 5vh 5vw;
 #user_description > p:before, #user_description > p:after{
 	content: '"';
 	color: rgb(33,33,33);
+}
+
+/* USER PAGE */
+.userpage_main{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+  width: 80vw;
+	margin: 0 10vw;
+}
+.userpage_avatarwrapper{
+	width: 30vmin;
+	height: 30vmin;
+	padding: 5vmin;
+}
+.userpage_avatar{
+	width: 25vmin;
+	height: 25vmin;
+	border-radius: 20vmin;
+	padding: 2.5vmin;
+}
+.userpage_namewrapper{
+	width: 50vmin;
+	height: 30vmin;
+}
+.userpage_username_first{
+  width: 50vmin;
+  height: 20vmin;
+  line-height: 20vmin;
+  font-size: 15vmin;
+  font-weight: bold;
+}
+.userpage_username_last{
+	width: 50vmin;
+  height: 10vmin;
+  line-height: 10vmin;
+  font-size: 7.5vmin;
+}
+.userpage_general{
+	margin: 0 10vw;
 }
