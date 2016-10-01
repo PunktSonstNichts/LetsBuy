@@ -1,8 +1,8 @@
 button, .btn, *[type='submit']{
 	border-radius: 1vmin;
 	padding: 4vmin 4vmax;
-	font-size: 1.7vmax;
-	line-height: 2vmax;
+	font-size: 3.5vmin;
+	line-height: 3.7vmin;
 	color: white;
 	font-weight: bold;
 	border: 1px solid rgb(229,210,173);
@@ -50,6 +50,7 @@ input[type='text'], input[type='password']{
 	line-height: 2vmax;
 	border: 1px solid rgb(188, 188, 188);
 	background-color: rgba(255, 255, 255, 0.8);
+	box-sizing: border-box;
 }
 input[type='text']:focus, input[type='password']:focus{
 	border: 1p solid rgb(195,222,218);

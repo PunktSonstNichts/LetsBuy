@@ -30,12 +30,12 @@
 				</div>
 				<div id="navigationbar">
 					<div class="navigation_item" data-pagelink="history_page">
-						<span class="icon">History</span>
+						<span class="icon">Lists</span>
 					</div>
 					<div class="navigation_item active" data-pagelink="home_page">
 						<span class="icon">Home</span>
 					</div>
-					<div class="navigation_item" data-pagelink="chat_page">
+					<div class="navigation_item news" data-pagelink="chat_page">
 						<span class="icon">Chat</span>
 					</div>
 				</div>
@@ -53,8 +53,8 @@
 		<!-- templates down here because of multiple ids in one .html -> confuses Javascript -->
 		<div id="templates">
 			<div id="history" data-template="history_page">
-				<div style="display: flex; justify-content: center;">
-					<button class="btn danger" style="margin: 2vh 0; width: 66vw;" id="logout">log out</button>
+				<div class="currentlists">
+						<div>No lists</div>
 				</div>
 			</div>
 
@@ -62,13 +62,13 @@
 				<div id="create_new_list">
 					<button class="btn success" id="create_new_list_btn" data-templatelink="new_list">Create new List</button>
 				</div>
-				<div class="currentlists">
+				<div class="match_loader">
 
 				</div>
 			</div>
 
 			<div id="chat" data-template="chat_page">
-				Chatting
+
 			</div>
 
 			<div id="new_list" data-template="new_list">
@@ -99,7 +99,7 @@
 					<span>Welcome to LetzBuy</span>
 				</div>
 				<div class="welcome_page_content">
-					LetzBuy is a platform, designed to increase your shopping experience in your lokal market
+					LetzBuy is a platform, designed to increase your shopping experience in your lokal market.
 				</div>
 				<div class="welcome_page_nav">
 					<button data-templatelink="home_page">skip</button>
@@ -112,7 +112,7 @@
 				</div>
 				<div class="welcome_page_content">
 					<div id="welcome_page_listoverview">First of all, create a list of goods you need from your local super market.
-					LetzBuy will search for nearby users with similar list.</div>
+					LetzBuy will notify you, if nearby users are searching for similar items.</div>
 					<div data-templateautoload="new_list" id="welcome_page_list"></div>
 				</div>
 				<div class="welcome_page_nav">

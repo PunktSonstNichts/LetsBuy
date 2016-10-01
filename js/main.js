@@ -1,6 +1,7 @@
 var app = {
-	//BASE_URL: "http://139.59.164.70", //Because I will always love you
-	BASE_URL: "http://127.0.0.1/LetzBuyServer",
+	//BASE_URL: "http://139.59.164.70",
+	BASE_URL: "http://127.0.0.1/LetzBuyServer", //Because I will always love you
+	//BASE_URL: "http://192.168.1.64/LetzBuyServer",
 	lat: 0.0,
 	long: 0.0,
 	init: function(){
@@ -74,6 +75,9 @@ var app = {
 
 		app.update();
 
+		//automatically login into system
+		app.autologin();
+
 		// Geo stuff
 		app.geo();
 
@@ -131,6 +135,9 @@ var app = {
 
 	},
 	update: function(){
+
+	},
+	autologin: function(){
 		if(localStorage.getItem("api_token") != null){
 			console.log("request data from api_token");
 			app.ajax("user", {}, function(response){
@@ -141,6 +148,8 @@ var app = {
 					app.user(response.user);
 					$("#content").html(app.template("home_page"));
 				}else{
+					//delete token for next try
+					localStorage.removeItem("api_token");
 					$("#content").html(app.template("auth", true));
 				}
 			});
@@ -163,6 +172,7 @@ var app = {
 		}
 		app.ajax("product_overview", {}, (function(data){
 			localStorage.setItem("products", JSON.stringify(data.products));
+			console.log("products:");
 			console.log(data);
 		}));
 		app.ajax("shopping_list_overview", {}, (function(data){
@@ -174,6 +184,7 @@ var app = {
 						console.log(data);
 					}));
 				});
+				$(".currentlists").html("");
 				$.each(list, function( index, value ) {
 					console.log(value);
 					$(".currentlists").append(app.templatelist.list(value));
@@ -182,7 +193,34 @@ var app = {
 				//alert("no lists created yet");
 			}
 		}));
-
+		app.ajax("chat_overview", {}, (function(data){
+			chats = data.chats;
+			console.log("chat");
+			console.log(chats);
+			$("#chat").html("");
+			if(chats != null && chats.length > 0){
+				$.each(chats, function( index, value ) {
+					console.log(value);
+					$("#chat").append(app.templatelist.chat(value));
+				});
+			}else{
+				$("#chat").append(app.templatelist.nochat());
+			}
+		}));
+		app.ajax("match", {}, (function(data){
+			matches = data.match;
+			console.log("match");
+			console.log(matches);
+			$(".match_loader").html("");
+			if(matches != null && matches.length > 0){
+				$.each(matches, function( index, value ) {
+					console.log(value);
+					$(".match_loader").append(app.templatelist.match(value));
+				});
+			}else{
+				$("#chat").append(app.templatelist.nochat());
+			}
+		}));
 	},
 	template: function(name, fullscreen = false){
 
@@ -203,20 +241,7 @@ var app = {
 		list : function(value){
 			return '<div class="list" data-elemid="' + value.id + '">'
 					+ '<div class="list_first_row">' + value.title + '</div>'
-					+ '<div class="list_last_row">' + value.duedate + ' <span class="list_distance">' + app.distancetoString(value.lat, value.long, app.lat,app.long) + '</span></div>'
-				+ '</div>';
-		},
-		match: function(value){
-			return '<div id="match" data-template="match">'
-					+ '<div id="user_info">'
-						+ '<div id="user_general">'
-							+ '<img src="" id="match_avatar" data-refresh="avatar"/>'
-							+ '<span id="match_name" data-refresh="name"></span>'
-						+ '</div>'
-						+ '<div id="user_description">'
-							+ '<p>I love broccoli pizza!</p>'
-						+ '</div>'
-					+ '</div>'
+					+ '<div class="list_last_row">' + humanreadableDate(value.duedate) + ' <span class="list_distance">' + app.distancetoString(value.lat, value.lon, app.lat,app.long) + '</span></div>'
 				+ '</div>';
 		},
 		autocomplete_item: function(value){
@@ -224,6 +249,83 @@ var app = {
 									'<div class="item_ac_card_head">' + value.product_name + '</div>' +
 									'<span>meistens werden ' + value.standard_quantity + ' ' + ((value.quantity_name != null) ? value.quantity_name : '')  + ' gekauft</span>' +
 						 '</div>';
+		},
+		chat: function(value){
+			status = "green";
+
+			var target = new Date(Date.parse(value.deadline));
+			var start = new Date(Date.parse(value.created));
+			var curr = new Date();
+			var targetdiff = (target.getTime() - curr.getTime()) / 1000; //diff in sec
+			var startdiff = (curr.getTime() - start.getTime()) / 1000; //diff in sec
+
+			perc = (startdiff / (targetdiff + startdiff)) * 100;
+
+			if(perc >= 70){
+				status = "yellow";
+				if(perc >= 90){
+					status = "red";
+				}
+			}
+
+			return '<div class="chat_elem ' + status + '" data-chat_id="' + value.match_id + '">' +
+					'<div class="chat_elem_status"></div>' +
+					'<img class="chat_elem_avatar" src="' + value.image.src + '"/>' +
+					'<div class="chat_elem_content">' +
+						'<div class="chat_elem_name">' + value.first_name + ' ' + value.last_name + '</div>' +
+						'<div class="chat_elem_msg">' +
+								'<div class="chat_elem_msg_content">' + (value.msg ? value.msg : '') + '</div>' +
+								'<span class="chat_elem_msg_date">' + (value.ts ? humanreadableDate(value.ts) : '') + '</span>' +
+						'</div>' +
+					'</div>' +
+				'</div>';
+		},
+		nochat: function(){
+			return '<div id="nochat">' +
+			 '<span>No open chats... :(</span>' +
+			 '</div>';
+		},
+
+		match: function(value){
+			var ret = "";
+			ret += '<div class="match_wrapper">';
+			ret += '	<div class="matchbox">';
+			ret += '		<div class="match_items">';
+
+			console.log(value.items);
+			$.each(value.items, function( index, item ) {
+				console.log(item);
+				ret += '<div class="match_item">';
+				ret += '<div class="item_name">' + item.product_name + '</div>';
+				ret += '<div class="item_quantity_wrapper">';
+				ret += '<div class="item_quantity">' + item.quantity + '</div>';
+				if(item.quantity_name){
+					ret += '<div class="item_quantity_name">' + item.quantity_name + '</div>';
+				}
+				ret += '</div>'; //.item_quantity_wrapperv
+				ret += '</div>'; //.match_item
+			});
+			ret += '</div>'; //.match_items
+
+			ret += '<div class="match_info">';
+			ret += '<div class="match_list">';
+			ret += '<div class="match_list_name">' + value.opponent_list_title + '</div>';
+			ret += '<div class="match_list_duedate">' + humanreadableDate(value.opponent_list_duedate) + '</div>';
+			ret += '</div>'; //.match_list
+
+			ret += '<div class="match_interaction"><button class="danger">X</button><button class="success">Yeas!</button></div>';
+
+			ret += '</div>'; //.match_info
+
+			ret += '</div>'; //.matchbox
+
+			ret += '<div class="match_with">';
+			ret += 'This is a match with <span>' + value.list_title + '</span>';
+			ret += '</div>'; // .match_with
+
+
+			ret += '</div>'; // .match_wrapper
+			return ret;
 		}
 	},
 	error: function(msg, duration = 1000){
@@ -232,11 +334,10 @@ var app = {
 		$("#error").show(0).delay(5000).fadeOut(1);
 	},
 	ajax: function(service, data, response){
-		if(navigator.onLine){
+		if(!navigator.onLine){
 			cache = JSON.parse(localStorage.getItem(service));
-			console.log(cache);
-			console.log(Date.now());
 			if(cache && cache.received + (60000 * 60 * 24) > Date.now()){ // cache lasts a day
+				console.log("get " + service + " from cache");
 				response(cache);
 			}else{
 				response({success: false, msg: "Connection to the internet needed, but not possible"});
@@ -261,6 +362,14 @@ var app = {
 					break;
 				case "product_overview":
 					url = app.BASE_URL + "/products.php";
+					type = 'GET';
+					break;
+				case "chat_overview":
+					url = app.BASE_URL + "/chat.php";
+					type = 'GET';
+					break;
+				case "match":
+					url = app.BASE_URL + "/match.php";
 					type = 'GET';
 				default:
 					// ERROR CLASS
@@ -289,12 +398,13 @@ var app = {
 					data.received = Date.now();
 					data.success = true;
 
-					response(data);
 					if(data.status == "ok"){
 						localStorage.setItem(service, JSON.stringify(data));
 					}else if(data.status == "error"){
 						app.error(data.msg);
 					}
+
+					response(data);
 				}
 			});
 		}
@@ -344,8 +454,7 @@ if (!Date.now) {
 }
 
 // For serializing Objects
-$.fn.serializeObject = function()
-{
+$.fn.serializeObject = function(){
    var o = {};
    var a = this.serializeArray();
    $.each(a, function() {
@@ -359,4 +468,51 @@ $.fn.serializeObject = function()
        }
    });
    return o;
+};
+
+function humanreadableDate(mysqldate){
+	var target = new Date(Date.parse(mysqldate));
+	var curr = new Date();
+	var diff = (target.getTime() - curr.getTime()) / 1000; //diff in seconds
+	console.log(target.getMonth());
+	console.log(diff);
+	if(target.getDate() == curr.getDate()){
+		if(diff > 0){ //future
+			if(diff < 60){
+				return "just now";
+			}
+			diff = Math.floor(diff / 60);
+			if(diff <= 50){
+				return "in " + diff + " minutes";
+			}
+			diff = Math.floor(diff / 24);
+			return "in " + diff + " hours";
+		}else if(diff < 0){ //past
+			diff = diff * -1;
+			if(diff < 60){
+				return "just now";
+			}
+			diff = Math.floor(diff / 60);
+			if(diff <= 50){
+				return diff + " minutes ago";
+			}
+			diff = Math.floor(diff / 24);
+			return diff + " hours ago";
+		}else{
+			return "just now";
+		}
+	}
+
+	var monthNames = [
+	  "January", "February", "March",
+	  "April", "May", "June", "July",
+	  "August", "September", "October",
+	  "November", "December"
+	];
+
+	var day = target.getDate();
+	var monthIndex = target.getMonth();
+	var year = target.getFullYear();
+
+	return day + ' ' + monthNames[monthIndex] + ' ' + year;
 };
