@@ -2,16 +2,16 @@
 <html>
 	<head>
 		<meta charset="utf-8" />
-       <meta name="format-detection" content="telephone=no" />
-        <meta name="msapplication-tap-highlight" content="no" />
-        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
-        <meta name="viewport" data-type="standard" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
-        <meta name="viewport" data-type="IOS" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, target-densitydpi=device-dpi" />
+		<meta name="format-detection" content="telephone=no" />
+		<meta name="msapplication-tap-highlight" content="no" />
+		<!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+		<meta name="viewport" data-type="standard" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+		<meta name="viewport" data-type="IOS" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, target-densitydpi=device-dpi" />
 		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <link rel="stylesheet" type="text/css" href="css/framework.css" />
-        <link rel="stylesheet" type="text/css" href="css/index.css" />
-        <script type="text/javascript" src="external/jquery/jquery-2.2.3.min.js"></script>
-        <script type="text/javascript" src="js/main.js"></script>
+		<link rel="stylesheet" type="text/css" href="css/framework.css" />
+		<link rel="stylesheet" type="text/css" href="css/index.css" />
+		<script type="text/javascript" src="external/jquery/jquery-2.2.3.min.js"></script>
+		<script type="text/javascript" src="js/main.js"></script>
 		<title>LetzBuy!</title>
 	</head>
 	<body>
@@ -30,38 +30,45 @@
 				</div>
 				<div id="navigationbar">
 					<div class="navigation_item" data-pagelink="history_page">
-						<span class="icon">History</span>
+						<span class="icon">Lists</span>
 					</div>
 					<div class="navigation_item active" data-pagelink="home_page">
 						<span class="icon">Home</span>
 					</div>
-					<div class="navigation_item" data-pagelink="chat_page">
+					<div class="navigation_item news" data-pagelink="chat_page">
 						<span class="icon">Chat</span>
 					</div>
 				</div>
 			</div>
-			<div id="content">
-				<h1>Ooops</h1>
-				<p>Seems like something went horrbile wrong</p>
+			<div id="content_wrapper">
+				<div id="error">
+					<span id="error_msg"></span>
+				</div>
+				<div id="content">
+					<h1>Ooops</h1>
+					<p>Seems like something went horrbile wrong</p>
+				</div>
 			</div>
 		</div>
 		<!-- templates down here because of multiple ids in one .html -> confuses Javascript -->
 		<div id="templates">
 			<div id="history" data-template="history_page">
-				history
+				<div class="currentlists">
+						<div>No lists</div>
+				</div>
 			</div>
 
 			<div id="home" data-template="home_page">
 				<div id="create_new_list">
 					<button class="btn success" id="create_new_list_btn" data-templatelink="new_list">Create new List</button>
 				</div>
-				<div class="currentlists">
+				<div class="match_loader">
 
 				</div>
 			</div>
 
 			<div id="chat" data-template="chat_page">
-				Chatting
+
 			</div>
 
 			<div id="new_list" data-template="new_list">
@@ -79,34 +86,71 @@
 				</form>
 			</div>
 			<div class="item" data-template="list_item">
-				<input type="text" class="nlname_input" placeholder="name" name="names"/>
-				<input type="text" class="nlquantity_input" placeholder="quantity" name="quantities" pattern="[-+]?([0-9]*\.[0-9]+|[0-9]+)" min="0.0" step="0.5"/>
+				<div class="item_input_wrapper">
+					<input type="text" class="nlname_input" placeholder="name" name="names"/>
+					<input type="text" class="nlquantity_input" placeholder="quantity" name="quantities" pattern="[-+]?([0-9]*\.[0-9]+|[0-9]+)" min="0.0" step="0.5"/>
+				</div>
+				<div class="item_autocomplete">
+
+				</div>
+			</div>"
+			<div class="welcome_page" id="welcome_page" data-template="welcome_page">
+				<div class="welcome_page_heading">
+					<span>Welcome to LetzBuy</span>
+				</div>
+				<div class="welcome_page_content">
+					LetzBuy is a platform, designed to increase your shopping experience in your lokal market.
+				</div>
+				<div class="welcome_page_nav">
+					<button data-templatelink="home_page">skip</button>
+					<button data-templatefullpage="true" data-templatelink="welcome_page2" class="flat">take the tour</button>
+				</div>
+			</div>
+			<div class="welcome_page" id="welcome_page2" data-template="welcome_page2">
+				<div class="welcome_page_heading">
+					<span>Welcome to LetzBuy</span>
+				</div>
+				<div class="welcome_page_content">
+					<div id="welcome_page_listoverview">First of all, create a list of goods you need from your local super market.
+					LetzBuy will notify you, if nearby users are searching for similar items.</div>
+					<div data-templateautoload="new_list" id="welcome_page_list"></div>
+				</div>
+				<div class="welcome_page_nav">
+					<button data-templatelink="home_page">skip</button>
+					<button data-templatefullpage="true" data-templatelink="welcome_page3" class="flat">next</button>
+				</div>
+			</div>
+			<div class="welcome_page" id="welcome_page3" data-template="welcome_page3">
+				<div class="welcome_page_heading">
+					<span>Welcome to LetzBuy</span>
+				</div>
+				<div class="welcome_page_content">
+					That's it. We will notify you when we find a match nearby. You can upload more lists or put your phone away and go out for a walk.
+				</div>
+				<div class="welcome_page_nav">
+					<button data-templatelink="home_page" class="flat success" style="width: 100%">to the app</button>
+				</div>
 			</div>
 			<div id="auth" data-template="auth">
-				<div id="auth_bg" data-refresh="bgimg">
-				
+				<div id="login_heading">
+					Start using LetzBuy!
 				</div>
-				<div id="auth_helper">
-					<div id="login_heading">
-						Start using LetzBuy!
-					</div>
-					<div id="register_form">
-						<form class="authform" data-serive="user">
-							<input type="text" class="login_input" placeholder="username" name="name"/>
-							<input type="text" class="login_input" placeholder="email" name="email"/>
-							<input type="password" class="login_input" placeholder="password" name="password"/>
-							<button type="submit" class="login_input">register!</button>
-						</form>
-						<button class="change_auth_state login_input">login</button>
-					</div>
-					<div id="login_form" class="hidden">
-						<form class="authform" data-service="user">
-							<input type="text" class="login_input" placeholder="username" name="name"/>
-							<input type="password" class="login_input" placeholder="password" name="password"/>
-							<button type="submit" class="login_input">log in!</button>
-						</form>
-						<button class="change_auth_state login_input">register</button>
-					</div>
+				<div id="register_form">
+					<form class="authform" data-serive="user">
+						<input type="text" class="login_input" placeholder="username" name="name"/>
+						<input type="text" class="login_input" placeholder="email" name="email"/>
+						<input type="password" class="login_input" placeholder="password" name="password"/>
+						<button type="submit" class="login_input flat">register!</button>
+					</form>
+					<button class="change_auth_state login_input flat">login</button>
+				</div>
+				<div id="login_form" class="hidden">
+					<form class="authform" data-service="user">
+						<input type="text" class="login_input" placeholder="username" name="name"/>
+						<input type="password" class="login_input" placeholder="password" name="password"/>
+						<button type="submit" class="login_input flat">log in!</button>
+					</form>
+					<button class="change_auth_state login_input flat">register</button>
 				</div>
 			</div>
 			<div data-template="userpage">
@@ -120,16 +164,15 @@
 					</div>
 				</div>
 				<div class="userpage_general">
-					<p class="userpage_description" data-refrsh="userdescription"></p>
+					<p class="userpage_description" data-refresh="userdescription"></p>
 				</div>
-				<div class="userpanel_logut" style="display: flex; justify-content: center;">
+				<div class="userpanel_logout" style="display: flex; justify-content: center;">
 					<button class="btn danger" style="margin: 2vh 0; width: 66vw;" id="logout">log out</button>
 				</div>
-				
 			</div>
 		</div>
 		<script type="text/javascript">
 			app.init();
 		</script>
 	</body>
-</html> 
+</html>
