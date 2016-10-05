@@ -1,7 +1,7 @@
 var app = {
 	//BASE_URL: "http://139.59.164.70",
 	BASE_URL: "http://127.0.0.1/LetzBuyServer", //Because I will always love you
-	//BASE_URL: "http://192.168.1.64/LetzBuyServer",
+	//BASE_URL: "http://192.168.3.186/LetzBuyServer",
 	lat: 0.0,
 	long: 0.0,
 	init: function(){
@@ -133,6 +133,15 @@ var app = {
 			$("#content").html(app.template($(this).attr("data-templatelink"), $(this).attr("data-templatefullpage")));
 		});
 
+
+		//chat
+		$(document).on("click touchstart", ".chat_elem", function(){
+
+			app.ajax("chat", {chat_id: $(this).attr("data-chat_id")}, function(response){
+				console.log(response);
+			});
+		});
+
 	},
 	update: function(){
 
@@ -218,7 +227,7 @@ var app = {
 					$(".match_loader").append(app.templatelist.match(value));
 				});
 			}else{
-				$("#chat").append(app.templatelist.nochat());
+				$(".match_loader").append(app.templatelist.nomatch());
 			}
 		}));
 	},
@@ -245,7 +254,7 @@ var app = {
 				+ '</div>';
 		},
 		autocomplete_item: function(value){
-			return '<div class="item_ac_card">' +
+			return '<div class="item_ac_card" data-productname="' + value.product_name + '">' +
 									'<div class="item_ac_card_head">' + value.product_name + '</div>' +
 									'<span>meistens werden ' + value.standard_quantity + ' ' + ((value.quantity_name != null) ? value.quantity_name : '')  + ' gekauft</span>' +
 						 '</div>';
@@ -292,8 +301,8 @@ var app = {
 			ret += '	<div class="matchbox">';
 			ret += '		<div class="match_items">';
 
-			console.log(value.items);
-			$.each(value.items, function( index, item ) {
+			console.log(value.opponent_items);
+			$.each(value.opponent_items, function( index, item ) {
 				console.log(item);
 				ret += '<div class="match_item">';
 				ret += '<div class="item_name">' + item.product_name + '</div>';
@@ -326,6 +335,9 @@ var app = {
 
 			ret += '</div>'; // .match_wrapper
 			return ret;
+		},
+		nomatch: function(){
+			
 		}
 	},
 	error: function(msg, duration = 1000){
@@ -364,6 +376,7 @@ var app = {
 					url = app.BASE_URL + "/products.php";
 					type = 'GET';
 					break;
+				case "chat":
 				case "chat_overview":
 					url = app.BASE_URL + "/chat.php";
 					type = 'GET';
@@ -371,6 +384,7 @@ var app = {
 				case "match":
 					url = app.BASE_URL + "/match.php";
 					type = 'GET';
+					break;
 				default:
 					// ERROR CLASS
 			}
