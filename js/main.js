@@ -9,10 +9,9 @@ var app = {
 		// stuff not worth creating a node for
 		// fill new shoppinglist form
 		$("#itemholder").append(app.template("list_item"));
-		//Should get moved
+		//TEMP
 		$(document).on("click touchstart", "#logout", function(){
 			localStorage.removeItem("api_token");
-			localStorage.removeItem("user");
 			location.reload();
 		});
 		$("*[data-templateautoload][data-templateautoload!='']").each(function(){
@@ -62,6 +61,8 @@ var app = {
 			e.preventDefault();
 			console.log($(this).serializeObject());
 			data = $(this).serializeObject();
+			data.latitude = app.lat;
+			data.longitude = app.long;
 			app.ajax("create_shopping_list", data, (function(data){
 				if(data.status == "ok"){
 					$("#content").html(app.template("home_page"));
@@ -89,10 +90,8 @@ var app = {
 		// Login form submit
 		$(document).on('submit', 'form.authform', function(e) {
 			e.preventDefault();
-			alert("sending data");
 			app.ajax("user", {name: $(this).children("*[name=name]").val(), email: $(this).children("*[name=email]").val(), password: $(this).children("*[name=password]").val()}, (function(response){
-				alert("received data");
-				user = response.user;
+
 				console.log(response);
 				console.log(response.user);
 				if(response.success && response.status == "ok" && response.user.api_token){
@@ -128,9 +127,6 @@ var app = {
 		});
 		// For the rest
 		$(document).on("click touchstart","*[data-templatelink][data-templatelink!='']",function() {
-			//check vor fullscreen
-			fullscreen = $(this).attr("data-fullscreen") ? $(this).attr("data-fullscreen") : false;
-			console.log(fullscreen);
 			// append back button
 			$("#back_btn").show();
 			// follow link
@@ -148,7 +144,6 @@ var app = {
 
 	},
 	update: function(){
-
 
 	},
 	autologin: function(){
@@ -170,11 +165,8 @@ var app = {
 		}else{
 			$("#content").html(app.template("auth", true));
 		}
-		
 	},
 	user: function(data){
-		console.log("update user");
-		console.log(data);
 		if(data){
 			if(data.image){
 				$("*[data-refresh='avatar']").attr("src", data.image.src).attr("alt", data.image.name);
@@ -240,6 +232,7 @@ var app = {
 		}));
 	},
 	template: function(name, fullscreen = false){
+
 		console.log("Building template for '" + name + "'");
 		if(fullscreen != "keep"){
 			if(fullscreen){
@@ -397,12 +390,8 @@ var app = {
 			}
 			//needs to be there on every call
 			data.api_token = localStorage.getItem("api_token");
-			//needed for all list features
-			data.latitude = app.lat;
-			data.longitude = app.long;
 
 			$.ajaxSetup({
-				dataType: 'json', 
 				beforeSend: function(xhr) {
 			        xhr.withCredentials = true;
 			        xhr.setRequestHeader('Accept', 'application/json');
